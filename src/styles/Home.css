@@ -1,0 +1,152 @@
+.home-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 60vh;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-header h1 {
+  font-size: 3rem;
+  color: #2ecc71;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.home-subtitle {
+  font-size: 1.3rem;
+  color: #666;
+  margin: 0;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.game-card-link {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease;
+}
+
+.game-card-link:hover {
+  transform: translateY(-8px);
+}
+
+.game-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #2ecc71;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.game-card:hover {
+  box-shadow: 0 12px 24px rgba(46, 204, 113, 0.25);
+}
+
+.game-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.game-name {
+  font-size: 1.4rem;
+  color: #333;
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+.game-description {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0.8rem 0 1.5rem;
+  flex-grow: 1;
+  line-height: 1.5;
+}
+
+.play-button {
+  display: inline-block;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.game-card:hover .play-button {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.5);
+}
+
+.home-footer {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(46, 204, 113, 0.1),
+    rgba(39, 174, 96, 0.1)
+  );
+  border-radius: 12px;
+}
+
+.home-footer p {
+  font-size: 1.1rem;
+  color: #2ecc71;
+  margin: 0;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    padding: 1rem;
+  }
+
+  .home-header h1 {
+    font-size: 2rem;
+  }
+
+  .home-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .game-icon {
+    font-size: 2.5rem;
+  }
+
+  .game-name {
+    font-size: 1.2rem;
+  }
+}

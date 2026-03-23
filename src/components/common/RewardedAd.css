@@ -1,0 +1,143 @@
+.rewarded-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.rewarded-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.rewarded-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.rewarded-icon.ad-playing {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.rewarded-modal h3 {
+  color: #1a1a1a;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.rewarded-desc {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.rewarded-wait {
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.ad-sim-screen {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  color: white;
+}
+
+.ad-sim-screen p {
+  margin: 0.25rem 0;
+}
+.ad-sim-note {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.countdown-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem auto;
+}
+
+.countdown-circle span {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.rewarded-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-watch {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.btn-watch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+.btn-skip {
+  background: transparent;
+  color: #999;
+  border: 1px solid #ddd;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-skip:hover {
+  background: #f5f5f5;
+}

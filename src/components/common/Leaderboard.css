@@ -1,0 +1,226 @@
+.lb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.lb-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 520px;
+  width: 94%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+  position: relative;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.lb-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.lb-close:hover {
+  background: #f5f5f5;
+}
+
+.lb-modal h2 {
+  color: #1a1a1a;
+  font-size: 1.6rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.lb-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.lb-tab {
+  padding: 0.5rem 1rem;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.lb-tab.active {
+  border-color: #2ecc71;
+  background: rgba(46, 204, 113, 0.1);
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.lb-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #888;
+}
+
+.lb-empty p {
+  margin: 0.25rem 0;
+}
+
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.lb-table th {
+  background: #f5f5f5;
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lb-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.95rem;
+}
+
+.lb-table tr.top-row td {
+  background: rgba(46, 204, 113, 0.05);
+  font-weight: 600;
+}
+
+.score-cell {
+  color: #2ecc71;
+  font-weight: 700;
+  font-size: 1.1rem !important;
+}
+
+.lb-clear {
+  width: 100%;
+  padding: 0.75rem;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  color: #999;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.lb-clear:hover {
+  background: #fff5f5;
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+/* ── Banner (global / local indicator) ─────────────────────────────────── */
+.lb-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.lb-global {
+  background: rgba(46, 204, 113, 0.12);
+  color: #27ae60;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.lb-local {
+  background: #fffbea;
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+
+.lb-local code {
+  background: rgba(0, 0, 0, 0.08);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.78rem;
+}
+
+/* ── Personal rank bubble ────────────────────────────────────────────────── */
+.lb-my-rank {
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid rgba(46, 204, 113, 0.35);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.rank-badge {
+  display: inline-block;
+  background: #2ecc71;
+  color: white;
+  font-weight: 800;
+  border-radius: 6px;
+  padding: 0.1rem 0.55rem;
+  font-size: 1rem;
+}
+
+/* ── 'YOU' highlight ─────────────────────────────────────────────────────── */
+.lb-table tr.my-row td {
+  background: rgba(46, 204, 113, 0.08) !important;
+  font-weight: 600;
+}
+
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.you-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: #2ecc71;
+  color: white;
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+  letter-spacing: 0.5px;
+}
+
+/* ── Loading state ───────────────────────────────────────────────────────── */
+.lb-loading {
+  text-align: center;
+  color: #aaa;
+  padding: 3rem 1rem;
+  font-size: 0.95rem;
+}

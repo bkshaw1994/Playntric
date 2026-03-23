@@ -1,0 +1,314 @@
+.sudoku-container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 2rem auto;
+}
+
+.sudoku-container h2 {
+  color: #2ecc71;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.game-description {
+  color: #888;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.sudoku-completed {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Hint section */
+.hint-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 1rem;
+}
+
+.hint-section h3 {
+  color: #2ecc71;
+  font-size: 1rem;
+  margin: 0 0 0.75rem 0;
+  text-align: center;
+}
+
+.hint-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hint-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);
+}
+
+.hint-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint-btn.hint-ad {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.hint-btn.hint-ad:hover {
+  box-shadow: 0 4px 10px rgba(243, 156, 18, 0.4);
+}
+
+.hint-premium-note {
+  font-size: 0.75rem;
+  color: #aaa;
+  text-align: center;
+  margin: 0.5rem 0 0;
+}
+
+/* Content Layout - Grid and Tracker Side by Side */
+.sudoku-content {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Number Tracker */
+.number-tracker {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.number-tracker h3 {
+  color: #2ecc71;
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.number-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.number-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border: 2px solid #2ecc71;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.number-badge:hover:not(.disabled) {
+  background: rgba(46, 204, 113, 0.1);
+  transform: scale(1.05);
+}
+
+.number-badge.disabled {
+  opacity: 0.5;
+  border-color: #ccc;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+.number-badge .number {
+  font-size: 1.3rem;
+  color: #2ecc71;
+  display: block;
+}
+
+.number-badge.disabled .number {
+  color: #999;
+}
+
+.number-badge .count {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.25rem;
+}
+
+.number-badge.disabled .count {
+  color: #bbb;
+}
+
+/* Hide spinner arrows on number input */
+.sudoku-cell::-webkit-outer-spin-button,
+.sudoku-cell::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.sudoku-cell[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.sudoku-grid {
+  display: inline-block;
+  border: 3px solid #2ecc71;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.sudoku-row {
+  display: flex;
+}
+
+.sudoku-cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  padding: 0;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.sudoku-cell:focus {
+  outline: none;
+  background-color: #e3f2fd;
+  box-shadow: inset 0 0 4px rgba(46, 204, 113, 0.3);
+}
+
+.sudoku-cell.fixed {
+  background-color: #f9f9f9;
+  color: #2ecc71;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+.sudoku-cell.border-bottom {
+  border-bottom: 3px solid #2ecc71;
+}
+
+.sudoku-cell.border-right {
+  border-right: 3px solid #2ecc71;
+}
+
+.sudoku-cell.invalid {
+  background-color: #ffebee;
+  border-color: #e53935;
+  color: #c62828;
+  box-shadow: inset 0 0 4px rgba(229, 57, 53, 0.3);
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.reset-button {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.reset-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+@media (max-width: 900px) {
+  .sudoku-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .number-tracker {
+    min-width: auto;
+    max-width: 300px;
+  }
+
+  .sudoku-cell {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .number-buttons {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .sudoku-container {
+    padding: 1rem;
+  }
+
+  .sudoku-content {
+    flex-direction: column;
+  }
+
+  .sudoku-cell {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .number-tracker {
+    padding: 1rem;
+  }
+
+  .number-badge {
+    padding: 0.6rem;
+  }
+
+  .number-badge .number {
+    font-size: 1rem;
+  }
+
+  .number-badge .count {
+    font-size: 0.7rem;
+  }
+}

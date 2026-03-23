@@ -1,0 +1,250 @@
+.wordle-container {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.wordle-container h2 {
+  color: #2ecc71;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.game-description {
+  color: #888;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.wordle-content {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wordle-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.guesses-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.guess-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.letter-box {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  background: #ccc;
+  transition: all 0.3s ease;
+}
+
+.letter-box.correct {
+  background: #2ecc71;
+  border-color: #2ecc71;
+  animation: popIn 0.3s ease;
+}
+
+.letter-box.present {
+  background: #c9b458;
+  border-color: #c9b458;
+  animation: popIn 0.3s ease;
+}
+
+.letter-box.absent {
+  background: #787c7e;
+  border-color: #787c7e;
+  animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.game-message {
+  text-align: center;
+  min-height: 30px;
+}
+
+.game-message p {
+  color: #667eea;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.keyboard-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.keyboard {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.key {
+  background: #d3d6da;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 35px;
+}
+
+.key:hover:not(:disabled) {
+  background: #b1b3b6;
+  transform: translateY(-2px);
+}
+
+.key:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.key.used {
+  background: #787c7e;
+  color: white;
+}
+
+.key.backspace {
+  padding: 0.5rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.keyboard-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.input-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.word-input {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 2px;
+  transition: border-color 0.2s;
+}
+
+.word-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background-color: #f9f9f9;
+}
+
+.word-input:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.controls {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.new-game-button {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.new-game-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+@media (max-width: 600px) {
+  .wordle-container {
+    padding: 1rem;
+  }
+
+  .letter-box {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .key {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+    min-width: 30px;
+  }
+
+  .wordle-content {
+    padding: 1rem;
+  }
+}
