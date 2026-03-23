@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./MathSpeedChallenge.css";
 import { Timer, Tv } from "lucide-react";
 import RewardedAd from "../../components/common/RewardedAd";
+import Seo from "../../components/common/Seo";
 import { usePremium } from "../../context/PremiumContext";
 import { saveScore } from "../../components/common/Leaderboard";
 import { usePlayer } from "../../context/PlayerContext";
@@ -19,6 +20,17 @@ export default function MathSpeedChallenge() {
   const [extraTimeUsed, setExtraTimeUsed] = useState(false);
   const { isPremium } = usePremium();
   const { playerName } = usePlayer();
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Game",
+    name: "Playntric Math Speed Challenge",
+    url: "https://playntric.vercel.app/mathspeed",
+    description:
+      "Play a free math speed game online and solve arithmetic problems against the clock on Playntric.",
+    genre: ["Educational", "Puzzle"],
+    applicationCategory: "Game",
+    operatingSystem: "Any",
+  };
 
   useEffect(() => {
     if (gameStatus === "playing" && timeLeft > 0) {
@@ -136,6 +148,19 @@ export default function MathSpeedChallenge() {
   if (gameStatus === "setup") {
     return (
       <div className="math-challenge-container">
+        <Seo
+          title="Play Math Speed Challenge Online | Playntric"
+          description="Train your arithmetic speed with Playntric's free online math challenge game."
+          path="/mathspeed"
+          keywords={[
+            "math game online",
+            "arithmetic game",
+            "math speed challenge",
+            "educational browser game",
+            "Playntric math game",
+          ]}
+          structuredData={structuredData}
+        />
         <h2>Math Speed Challenge</h2>
         <p className="game-description">
           Solve math problems as quickly as you can!
@@ -185,6 +210,19 @@ export default function MathSpeedChallenge() {
 
     return (
       <div className="math-challenge-container">
+        <Seo
+          title="Play Math Speed Challenge Online | Playntric"
+          description="Train your arithmetic speed with Playntric's free online math challenge game."
+          path="/mathspeed"
+          keywords={[
+            "math game online",
+            "arithmetic game",
+            "math speed challenge",
+            "educational browser game",
+            "Playntric math game",
+          ]}
+          structuredData={structuredData}
+        />
         <h2>Game Over!</h2>
 
         <div className="final-stats">
@@ -213,6 +251,19 @@ export default function MathSpeedChallenge() {
 
   return (
     <div className="math-challenge-container">
+      <Seo
+        title="Play Math Speed Challenge Online | Playntric"
+        description="Train your arithmetic speed with Playntric's free online math challenge game."
+        path="/mathspeed"
+        keywords={[
+          "math game online",
+          "arithmetic game",
+          "math speed challenge",
+          "educational browser game",
+          "Playntric math game",
+        ]}
+        structuredData={structuredData}
+      />
       <h2>
         Math Speed Challenge -{" "}
         {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}

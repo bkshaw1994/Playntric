@@ -1,0 +1,21 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1030" cy="110" r="180" fill="white" fill-opacity="0.08"/>
+  <circle cx="180" cy="560" r="220" fill="white" fill-opacity="0.06"/>
+  <rect x="88" y="98" width="160" height="160" rx="36" fill="white" fill-opacity="0.14"/>
+  <rect x="108" y="118" width="120" height="120" rx="24" stroke="white" stroke-width="10"/>
+  <path d="M108 178H228" stroke="white" stroke-width="10"/>
+  <path d="M168 118V238" stroke="white" stroke-width="10"/>
+  <circle cx="138" cy="148" r="10" fill="white"/>
+  <circle cx="198" cy="208" r="10" fill="white"/>
+  <text x="88" y="350" fill="white" font-size="84" font-family="Verdana, Arial, sans-serif" font-weight="700">Playntric</text>
+  <text x="88" y="430" fill="#E8FFF3" font-size="34" font-family="Verdana, Arial, sans-serif">Free online Sudoku, Chess, Wordle, Tic Tac Toe and Math Games</text>
+  <text x="88" y="494" fill="#D7FCE8" font-size="28" font-family="Verdana, Arial, sans-serif">Fast browser games. No installs. Play instantly.</text>
+  <defs>
+    <linearGradient id="bg" x1="84" y1="48" x2="1100" y2="610" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14532D"/>
+      <stop offset="0.55" stop-color="#16A34A"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+  </defs>
+</svg>

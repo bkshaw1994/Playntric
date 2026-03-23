@@ -10,6 +10,7 @@ import {
   Hash,
   Calculator,
 } from "lucide-react";
+import Seo from "../components/common/Seo";
 import "../styles/Home.css";
 
 export default function Home() {
@@ -51,8 +52,39 @@ export default function Home() {
     },
   ];
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Playntric",
+    url: "https://playntric.vercel.app/",
+    description:
+      "Free online browser games including Sudoku, Chess, Wordle, Tic Tac Toe, and Math Speed Challenge.",
+    hasPart: games.map((game) => ({
+      "@type": "Game",
+      name: game.name,
+      url: `https://playntric.vercel.app${game.path}`,
+      description: game.description,
+    })),
+  };
+
   return (
     <div className="home-container">
+      <Seo
+        title="Playntric | Free Online Sudoku, Chess, Wordle, Tic Tac Toe and Math Games"
+        description="Play free online games on Playntric, including Sudoku, Chess, Wordle, Tic Tac Toe, and Math Speed Challenge."
+        path="/"
+        keywords={[
+          "free online games",
+          "browser games",
+          "Playntric",
+          "sudoku online",
+          "play chess online",
+          "wordle game",
+          "tic tac toe online",
+          "math games",
+        ]}
+        structuredData={structuredData}
+      />
       <div className="home-header">
         <h1>
           <Gamepad2 size={32} /> Playntric

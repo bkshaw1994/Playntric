@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Chess.css";
 import { usePremium } from "../../context/PremiumContext";
 import { Bot, Users, Globe, Lock } from "lucide-react";
+import Seo from "../../components/common/Seo";
 import { usePlayer } from "../../context/PlayerContext";
 import { saveScore } from "../../components/common/Leaderboard";
 
@@ -17,6 +18,17 @@ export default function Chess() {
   const [gameStatus, setGameStatus] = useState("playing"); // 'playing', 'checkmate', 'check', 'stalemate'
   const [onlineCode, setOnlineCode] = useState("");
   const [validMoves, setValidMoves] = useState([]);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Game",
+    name: "Playntric Chess",
+    url: "https://playntric.vercel.app/chess",
+    description:
+      "Play free online chess on Playntric against a bot or locally with move tracking and board themes.",
+    genre: ["Strategy", "Board Game"],
+    applicationCategory: "Game",
+    operatingSystem: "Any",
+  };
 
   useEffect(() => {
     if (gameMode) {
@@ -521,6 +533,19 @@ export default function Chess() {
   if (!gameMode) {
     return (
       <div className="chess-container">
+        <Seo
+          title="Play Chess Online Free | Playntric"
+          description="Play free online chess on Playntric with bot mode, local multiplayer, move history, and board themes."
+          path="/chess"
+          keywords={[
+            "chess online",
+            "play chess free",
+            "browser chess",
+            "chess bot game",
+            "Playntric chess",
+          ]}
+          structuredData={structuredData}
+        />
         <h2>Chess</h2>
         <p className="game-description">Choose your game mode</p>
 
@@ -555,6 +580,19 @@ export default function Chess() {
 
   return (
     <div className="chess-container">
+      <Seo
+        title="Play Chess Online Free | Playntric"
+        description="Play free online chess on Playntric with bot mode, local multiplayer, move history, and board themes."
+        path="/chess"
+        keywords={[
+          "chess online",
+          "play chess free",
+          "browser chess",
+          "chess strategy game",
+          "Playntric chess",
+        ]}
+        structuredData={structuredData}
+      />
       <h2>
         Chess -{" "}
         {gameMode === "bot"

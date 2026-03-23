@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../sudoku/Sudoku.css";
 import { PartyPopper, Lightbulb, Tv, Star, RotateCcw } from "lucide-react";
 import RewardedAd from "../../components/common/RewardedAd";
+import Seo from "../../components/common/Seo";
 import { usePremium } from "../../context/PremiumContext";
 import { saveScore } from "../../components/common/Leaderboard";
 import { usePlayer } from "../../context/PlayerContext";
@@ -215,9 +216,33 @@ export default function Sudoku() {
   };
 
   const numberCounts = getNumberCount();
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Game",
+    name: "Playntric Sudoku",
+    url: "https://playntric.vercel.app/sudoku",
+    description:
+      "Play free online Sudoku on Playntric with hints, validation, and a fresh puzzle every round.",
+    genre: ["Puzzle", "Logic"],
+    applicationCategory: "Game",
+    operatingSystem: "Any",
+  };
 
   return (
     <div className="sudoku-container">
+      <Seo
+        title="Play Sudoku Online Free | Playntric"
+        description="Play free Sudoku online with hints, smart validation, and fresh puzzles on Playntric."
+        path="/sudoku"
+        keywords={[
+          "sudoku online",
+          "play sudoku free",
+          "sudoku puzzle",
+          "logic game",
+          "Playntric sudoku",
+        ]}
+        structuredData={structuredData}
+      />
       <h2>Sudoku Puzzle</h2>
       <p className="game-description">
         Fill the 9x9 grid so that each row, column, and 3x3 box contains the

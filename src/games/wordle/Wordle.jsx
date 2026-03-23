@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
 import "./Wordle.css";
 import { Delete } from "lucide-react";
+import Seo from "../../components/common/Seo";
 import { saveScore } from "../../components/common/Leaderboard";
 import { usePlayer } from "../../context/PlayerContext";
 
 export default function Wordle() {
   const { playerName } = usePlayer();
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Game",
+    name: "Playntric Wordle",
+    url: "https://playntric.vercel.app/wordle",
+    description:
+      "Play a free Wordle-style word guessing game online with six tries on Playntric.",
+    genre: ["Word Game", "Puzzle"],
+    applicationCategory: "Game",
+    operatingSystem: "Any",
+  };
   const WORD_LIST = [
     "REACT",
     "VITES",
@@ -106,6 +118,19 @@ export default function Wordle() {
 
   return (
     <div className="wordle-container">
+      <Seo
+        title="Play Wordle Online Free | Playntric"
+        description="Guess the hidden word in six tries with Playntric's free online Wordle game."
+        path="/wordle"
+        keywords={[
+          "wordle online",
+          "word guessing game",
+          "free word game",
+          "browser puzzle game",
+          "Playntric wordle",
+        ]}
+        structuredData={structuredData}
+      />
       <h2>Wordle Game</h2>
       <p className="game-description">
         Guess the 5-letter word in 6 attempts. Green means correct position,

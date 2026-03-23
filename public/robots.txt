@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://playntric.vercel.app/sitemap.xml

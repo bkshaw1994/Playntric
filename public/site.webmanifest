@@ -1,0 +1,16 @@
+{
+  "name": "Playntric",
+  "short_name": "Playntric",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14532d",
+  "theme_color": "#2ecc71",
+  "description": "Play free online Sudoku, Chess, Wordle, Tic Tac Toe and Math Speed Challenge on Playntric.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ]
+}

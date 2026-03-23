@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./TicTacToe.css";
 import { Bot, Users, Globe } from "lucide-react";
+import Seo from "../../components/common/Seo";
 import { usePlayer } from "../../context/PlayerContext";
 import { saveScore } from "../../components/common/Leaderboard";
 
@@ -18,6 +19,17 @@ export default function TicTacToe() {
   const [gameHistoy, setGameHistory] = useState([]);
   const { playerName } = usePlayer();
   const scoreSavedRef = useRef(false);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Game",
+    name: "Playntric Tic Tac Toe",
+    url: "https://playntric.vercel.app/tictactoe",
+    description:
+      "Play free online Tic Tac Toe on Playntric against a bot or another local player.",
+    genre: ["Strategy", "Board Game"],
+    applicationCategory: "Game",
+    operatingSystem: "Any",
+  };
 
   useEffect(() => {
     if (gameMode === "bot" && !isXNext && gameStatus === "playing") {
@@ -178,6 +190,19 @@ export default function TicTacToe() {
   if (!gameMode) {
     return (
       <div className="tictactoe-container">
+        <Seo
+          title="Play Tic Tac Toe Online Free | Playntric"
+          description="Play free Tic Tac Toe online with bot and local multiplayer modes on Playntric."
+          path="/tictactoe"
+          keywords={[
+            "tic tac toe online",
+            "play tic tac toe free",
+            "xo game",
+            "browser board game",
+            "Playntric tic tac toe",
+          ]}
+          structuredData={structuredData}
+        />
         <h2>Tic Tac Toe</h2>
         <p className="game-description">Choose your game mode</p>
 
@@ -212,6 +237,19 @@ export default function TicTacToe() {
 
   return (
     <div className="tictactoe-container">
+      <Seo
+        title="Play Tic Tac Toe Online Free | Playntric"
+        description="Play free Tic Tac Toe online with bot and local multiplayer modes on Playntric."
+        path="/tictactoe"
+        keywords={[
+          "tic tac toe online",
+          "play tic tac toe free",
+          "xo game",
+          "browser board game",
+          "Playntric tic tac toe",
+        ]}
+        structuredData={structuredData}
+      />
       <h2>
         Tic Tac Toe -{" "}
         {gameMode === "bot"
