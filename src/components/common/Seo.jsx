@@ -44,7 +44,9 @@ export default function Seo({
       <meta name="twitter:image" content={imageUrl} />
 
       {structuredData ? (
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
       ) : null}
     </Helmet>
   );
