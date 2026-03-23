@@ -44,6 +44,14 @@
   flex-wrap: wrap;
 }
 
+.navbar-sections {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .nav-button {
   background: rgba(46, 204, 113, 0.2);
   color: white;
@@ -71,27 +79,15 @@
   border-color: #2ecc71;
 }
 
+.nav-leaderboard-text {
+  text-transform: uppercase;
+}
+
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
-}
-
-.nav-lb-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid transparent;
-  color: white;
-  font-size: 1.2rem;
-  padding: 0.5rem 0.6rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.nav-lb-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
 }
 
 .nav-premium-btn {
@@ -161,6 +157,11 @@
     width: 100%;
     justify-content: center;
     gap: 0.3rem;
+  }
+
+  .navbar-sections {
+    width: 100%;
+    justify-content: center;
   }
 
   .nav-button {

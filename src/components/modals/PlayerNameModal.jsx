@@ -19,8 +19,8 @@ export default function PlayerNameModal({ onClose }) {
         <div className="pn-icon">
           <User size={48} />
         </div>
-        <h2>What's your name?</h2>
-        <p className="pn-sub">Your name will appear on the leaderboard</p>
+        <h2>What&apos;s your name?</h2>
+        <p className="pn-sub">Your name will appear on scores</p>
 
         <input
           className="pn-input"
@@ -39,7 +39,7 @@ export default function PlayerNameModal({ onClose }) {
           onClick={handleSave}
           disabled={!input.trim()}
         >
-          <Swords size={18} /> Let's Play!
+          <Swords size={18} /> Let&apos;s Play!
         </button>
       </div>
     </div>

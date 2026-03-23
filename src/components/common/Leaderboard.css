@@ -9,17 +9,30 @@
   backdrop-filter: blur(4px);
 }
 
+.lb-page-shell {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1.25rem;
+}
+
 .lb-modal {
-  background: white;
-  border-radius: 20px;
-  padding: 2rem;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfefc 100%);
+  border: 1px solid #e1eee6;
+  border-radius: 18px;
+  padding: 1.5rem;
   max-width: 520px;
   width: 94%;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 14px 32px rgba(20, 60, 40, 0.14);
   animation: slideIn 0.3s ease;
   position: relative;
+}
+
+.lb-modal.lb-modal-standalone {
+  max-width: 100%;
+  width: 100%;
+  max-height: none;
 }
 
 @keyframes slideIn {
@@ -37,24 +50,31 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  color: #999;
+  background: #f2f7f4;
+  border: 1px solid #dce8e1;
+  color: #557266;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.35rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lb-close:hover {
-  background: #f5f5f5;
+  background: #eaf3ee;
+  border-color: #cfe1d7;
+  color: #305744;
 }
 
 .lb-modal h2 {
-  color: #1a1a1a;
-  font-size: 1.6rem;
-  margin-bottom: 1.25rem;
-  text-align: center;
+  color: #1e3f31;
+  font-size: 1.5rem;
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
 }
 
 .lb-tabs {
@@ -65,27 +85,37 @@
 }
 
 .lb-tab {
-  padding: 0.5rem 1rem;
-  border: 2px solid #ddd;
-  background: white;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #d6e3dc;
+  background: #f8fcfa;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.2s;
+  color: #3d5b4f;
+  transition: all 0.2s ease;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .lb-tab.active {
-  border-color: #2ecc71;
-  background: rgba(46, 204, 113, 0.1);
-  color: #27ae60;
+  border-color: #5aae7f;
+  background: #e7f6ed;
+  color: #1f6a43;
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(46, 130, 86, 0.16);
+}
+
+.lb-tab:hover {
+  border-color: #b4d0c1;
+  background: #f1faf5;
 }
 
 .lb-empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: #888;
+  color: #5f7569;
 }
 
 .lb-empty p {
@@ -94,44 +124,57 @@
 
 .lb-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-bottom: 1rem;
+  border: 1px solid #e3ece7;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .lb-table th {
-  background: #f5f5f5;
+  background: #eff7f2;
   padding: 0.75rem;
   text-align: left;
   font-size: 0.85rem;
-  color: #666;
+  color: #4e675c;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .lb-table td {
   padding: 0.75rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #edf2ef;
   font-size: 0.95rem;
+  color: #2f4c3e;
+}
+
+.lb-table tbody tr:nth-child(even) td {
+  background: #fcfefd;
+}
+
+.lb-table tbody tr:hover td {
+  background: #f3fbf6;
 }
 
 .lb-table tr.top-row td {
-  background: rgba(46, 204, 113, 0.05);
+  background: rgba(82, 184, 120, 0.14);
   font-weight: 600;
 }
 
 .score-cell {
-  color: #2ecc71;
+  color: #198754;
   font-weight: 700;
-  font-size: 1.1rem !important;
+  font-size: 1.03rem !important;
 }
 
 .lb-clear {
   width: 100%;
   padding: 0.75rem;
-  background: none;
-  border: 1px solid #ddd;
+  background: #fff;
+  border: 1px solid #d3dfd9;
   border-radius: 8px;
-  color: #999;
+  color: #62776d;
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
@@ -148,8 +191,8 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.8rem;
-  border-radius: 6px;
+  font-size: 0.82rem;
+  border-radius: 8px;
   padding: 0.45rem 0.75rem;
   margin-bottom: 0.75rem;
 }
@@ -175,19 +218,19 @@
 
 /* ── Personal rank bubble ────────────────────────────────────────────────── */
 .lb-my-rank {
-  background: rgba(46, 204, 113, 0.1);
-  border: 1px solid rgba(46, 204, 113, 0.35);
+  background: #edf9f1;
+  border: 1px solid #b9e3c9;
   border-radius: 8px;
   padding: 0.6rem 1rem;
   text-align: center;
   font-size: 0.9rem;
-  color: #1a1a1a;
+  color: #2c4f3f;
   margin-bottom: 1rem;
 }
 
 .rank-badge {
   display: inline-block;
-  background: #2ecc71;
+  background: #2a9d67;
   color: white;
   font-weight: 800;
   border-radius: 6px;
@@ -197,7 +240,7 @@
 
 /* ── 'YOU' highlight ─────────────────────────────────────────────────────── */
 .lb-table tr.my-row td {
-  background: rgba(46, 204, 113, 0.08) !important;
+  background: rgba(72, 177, 113, 0.16) !important;
   font-weight: 600;
 }
 
@@ -210,7 +253,7 @@
 .you-badge {
   font-size: 0.65rem;
   font-weight: 800;
-  background: #2ecc71;
+  background: #2a9d67;
   color: white;
   border-radius: 4px;
   padding: 0.05rem 0.35rem;
@@ -220,7 +263,40 @@
 /* ── Loading state ───────────────────────────────────────────────────────── */
 .lb-loading {
   text-align: center;
-  color: #aaa;
+  color: #5f7569;
   padding: 3rem 1rem;
   font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .lb-page-shell {
+    margin: 1rem auto;
+    padding: 0.75rem;
+  }
+
+  .lb-modal {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  .lb-tabs {
+    gap: 0.45rem;
+    margin-bottom: 1rem;
+  }
+
+  .lb-tab {
+    font-size: 0.82rem;
+    padding: 0.45rem 0.7rem;
+  }
+
+  .lb-table th,
+  .lb-table td {
+    padding: 0.6rem 0.45rem;
+    font-size: 0.82rem;
+  }
+
+  .score-cell {
+    font-size: 0.9rem !important;
+  }
 }

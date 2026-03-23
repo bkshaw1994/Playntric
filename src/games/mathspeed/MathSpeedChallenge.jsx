@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./MathSpeedChallenge.css";
 import { Timer, Tv } from "lucide-react";
 import RewardedAd from "../../components/common/RewardedAd";
@@ -8,6 +8,7 @@ import { saveScore } from "../../components/common/Leaderboard";
 import { usePlayer } from "../../context/PlayerContext";
 
 export default function MathSpeedChallenge() {
+  const scoreSavedRef = useRef(false);
   const [difficulty, setDifficulty] = useState(null);
   const [gameStatus, setGameStatus] = useState("setup"); // 'setup', 'playing', 'finished'
   const [timeLeft, setTimeLeft] = useState(60);
@@ -42,6 +43,21 @@ export default function MathSpeedChallenge() {
       setGameStatus("finished");
     }
   }, [timeLeft, gameStatus]);
+
+  useEffect(() => {
+    if (gameStatus !== "finished" || scoreSavedRef.current) return;
+
+    scoreSavedRef.current = true;
+    const accuracy =
+      problemsCount > 0 ? Math.round((correctCount / problemsCount) * 100) : 0;
+
+    saveScore("mathspeed", {
+      name: playerName || "Anonymous",
+      score,
+      accuracy,
+      difficulty,
+    });
+  }, [gameStatus, score, correctCount, problemsCount, difficulty, playerName]);
 
   const generateProblem = (diffLevel) => {
     const operations = ["+", "-", "*", "/"];
@@ -89,6 +105,7 @@ export default function MathSpeedChallenge() {
   };
 
   const startGame = (level) => {
+    scoreSavedRef.current = false;
     setDifficulty(level);
     setGameStatus("playing");
     setTimeLeft(60);
@@ -124,6 +141,7 @@ export default function MathSpeedChallenge() {
   };
 
   const resetGame = () => {
+    scoreSavedRef.current = false;
     setDifficulty(null);
     setGameStatus("setup");
     setTimeLeft(60);
@@ -200,14 +218,6 @@ export default function MathSpeedChallenge() {
 
   if (gameStatus === "finished") {
     const accuracy = getAccuracy();
-    // Save score to leaderboard
-    saveScore("mathspeed", {
-      name: playerName || "Anonymous",
-      score,
-      accuracy,
-      difficulty,
-    });
-
     return (
       <div className="math-challenge-container">
         <Seo

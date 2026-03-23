@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import { usePremium } from "../../context/PremiumContext";
 import "./AdBanner.css";
 
@@ -7,23 +7,8 @@ const ADSENSE_SLOT_BANNER = import.meta.env.VITE_ADSENSE_SLOT_BANNER || "";
 const ADSENSE_SLOT_SIDEBAR = import.meta.env.VITE_ADSENSE_SLOT_SIDEBAR || "";
 const FORCE_SHOW_ADS = import.meta.env.VITE_SHOW_ADS === "true";
 
-function loadAdSenseScript(clientId) {
-  if (!clientId || typeof window === "undefined") return;
-
-  const existing = document.querySelector('script[data-google-adsense="true"]');
-  if (existing) return;
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`;
-  script.crossOrigin = "anonymous";
-  script.dataset.googleAdsense = "true";
-  document.head.appendChild(script);
-}
-
 export default function AdBanner({ slot = "banner" }) {
   const { isPremium } = usePremium();
-  const adRef = useRef(null);
 
   const adSlot = useMemo(() => {
     if (slot === "sidebar") return ADSENSE_SLOT_SIDEBAR;
@@ -35,15 +20,17 @@ export default function AdBanner({ slot = "banner" }) {
     ADSENSE_CLIENT_ID.startsWith("ca-pub-") && adSlot.trim().length > 0;
 
   useEffect(() => {
-    if (!shouldRender || !canLoadAd || !adRef.current) return;
+    if (!shouldRender || !canLoadAd || typeof window === "undefined") return;
 
-    loadAdSenseScript(ADSENSE_CLIENT_ID);
+    // Avoid duplicate push() calls in StrictMode and on re-renders.
+    const pendingSlot = document.querySelector(
+      "ins.adsbygoogle:not([data-adsbygoogle-status])",
+    );
+    if (!pendingSlot) return;
 
     try {
-      // Request one ad render per mounted ad unit.
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) {
-      // Ignore duplicate render errors from hot reload / remounts.
       console.warn("AdSense render skipped:", e?.message || e);
     }
   }, [shouldRender, canLoadAd]);
@@ -56,7 +43,6 @@ export default function AdBanner({ slot = "banner" }) {
 
       {canLoadAd ? (
         <ins
-          ref={adRef}
           className="adsbygoogle ad-unit"
           style={{ display: "block" }}
           data-ad-client={ADSENSE_CLIENT_ID}

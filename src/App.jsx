@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Gamepad2 } from "lucide-react";
 import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
+import FAQPage from "./pages/FAQPage";
+import RulesPage from "./pages/RulesPage";
+import DailyChallengesPage from "./pages/DailyChallengesPage";
+import GameOfDayPage from "./pages/GameOfDayPage";
 import Sudoku from "./games/sudoku/Sudoku";
 import Chess from "./games/chess/Chess";
 import Wordle from "./games/wordle/Wordle";
@@ -12,6 +16,7 @@ import AdBanner from "./components/layout/AdBanner";
 import { PremiumProvider } from "./context/PremiumContext";
 import { PlayerProvider, usePlayer } from "./context/PlayerContext";
 import PlayerNameModal from "./components/modals/PlayerNameModal";
+import { Link } from "react-router-dom";
 import "./styles/App.css";
 
 function AppInner() {
@@ -27,6 +32,13 @@ function AppInner() {
           <main className="game-container">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route
+                path="/daily-challenges"
+                element={<DailyChallengesPage />}
+              />
+              <Route path="/game-of-the-day" element={<GameOfDayPage />} />
+              <Route path="/faqs" element={<FAQPage />} />
+              <Route path="/rules" element={<RulesPage />} />
               <Route path="/sudoku" element={<Sudoku />} />
               <Route path="/chess" element={<Chess />} />
               <Route path="/wordle" element={<Wordle />} />
@@ -42,6 +54,10 @@ function AppInner() {
           <p>
             &copy; 2024 Playntric. Have fun playing! <Gamepad2 size={14} />
           </p>
+          <div className="footer-links">
+            <Link to="/faqs">FAQs</Link>
+            <Link to="/rules">Rules of the Game</Link>
+          </div>
         </footer>
         {!playerName && <PlayerNameModal />}
       </div>
