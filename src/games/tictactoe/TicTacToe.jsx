@@ -4,6 +4,7 @@ import { Bot, Users, Globe } from "lucide-react";
 import Seo from "../../components/common/Seo";
 import { usePlayer } from "../../context/PlayerContext";
 import { saveScore } from "../../components/common/Leaderboard";
+import { getGenAIMove } from "../../lib/genaiBot";
 
 export default function TicTacToe() {
   const [gameMode, setGameMode] = useState(null); // 'bot', 'local', 'online'
@@ -54,7 +55,41 @@ export default function TicTacToe() {
       }
     }
   }, [gameStatus]);
+}
 
+// GenAI bot move (with fallback)
+const makeAIMove = async () => {
+  // Try GenAI endpoint first
+  const move = await getGenAIMove({ game: "tictactoe", state: { board } });
+  if (typeof move === "number" && board[move] === null) {
+    playMove(move);
+    return;
+  }
+  // Fallback: local logic
+  const emptySquares = board
+    .map((square, idx) => (square === null ? idx : null))
+    .filter((val) => val !== null);
+  if (emptySquares.length === 0) return;
+  const winningMove = findWinningMove(board, "O");
+  if (winningMove !== null) {
+    playMove(winningMove);
+    return;
+  }
+  const blockingMove = findWinningMove(board, "X");
+  if (blockingMove !== null) {
+    playMove(blockingMove);
+    return;
+  }
+  if (board[4] === null) {
+    playMove(4);
+    return;
+  }
+  const corners = [0, 2, 6, 8].filter((idx) => board[idx] === null);
+  if (corners.length > 0) {
+    playMove(corners[Math.floor(Math.random() * corners.length)]);
+    return;
+  }
+  playMove(emptySquares[Math.floor(Math.random() * emptySquares.length)]);
   const calculateWinner = (squares) => {
     const lines = [
       [0, 1, 2],
@@ -64,6 +99,7 @@ export default function TicTacToe() {
       [1, 4, 7],
       [2, 5, 8],
       [0, 4, 8],
+      // eslint-disable-next-line
       [2, 4, 6],
     ];
     for (let i = 0; i < lines.length; i++) {
@@ -305,4 +341,4 @@ export default function TicTacToe() {
       )}
     </div>
   );
-}
+};

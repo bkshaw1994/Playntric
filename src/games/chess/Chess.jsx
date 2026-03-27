@@ -5,6 +5,7 @@ import { Bot, Users, Globe, Lock } from "lucide-react";
 import Seo from "../../components/common/Seo";
 import { usePlayer } from "../../context/PlayerContext";
 import { saveScore } from "../../components/common/Leaderboard";
+import { getGenAIMove } from "../../lib/genaiBot";
 
 export default function Chess() {
   const { isPremium, chessTheme, updateChessTheme } = usePremium();
@@ -179,9 +180,9 @@ export default function Chess() {
     return allMoves.length === 0;
   };
 
-  const makeAIMove = () => {
+  // GenAI bot move (with fallback)
+  const makeAIMove = async () => {
     const allMoves = getLegalMoves("black");
-
     if (allMoves.length === 0) {
       if (isKingInCheck("black")) {
         setGameStatus("checkmate");
@@ -190,72 +191,79 @@ export default function Chess() {
       }
       return;
     }
-
-    // Score moves: checkmate > check > escape check if needed > captures > safe moves
-    const scoredMoves = allMoves.map((move) => {
-      let score = 0;
-
-      // Test move on a copy
-      const testBoard = board.map((r) => [...r]);
-      const piece = testBoard[move.from[0]][move.from[1]];
-      testBoard[move.to[0]][move.to[1]] = piece;
-      testBoard[move.from[0]][move.from[1]] = null;
-
-      // Checkmate = win (highest priority)
-      if (
-        !getLegalMoves("white", testBoard).length &&
-        isKingInCheck("white", testBoard)
-      ) {
-        score += 50000;
-      }
-      // Check the opponent
-      else if (isKingInCheck("white", testBoard)) {
-        score += 200;
-      }
-
-      // Escape check if currently in check
-      if (isKingInCheck("black", board) && !isKingInCheck("black", testBoard)) {
-        score += 5000;
-      }
-
-      // Capture opponent piece (value depends on piece type)
-      const capturedPiece = board[move.to[0]][move.to[1]];
-      if (capturedPiece) {
-        score += getPieceValue(capturedPiece.piece) * 10;
-      }
-
-      // Avoid moving into attacked squares
-      if (isSquareAttackedByColor(move.to[0], move.to[1], "white", testBoard)) {
-        const movingPiece = board[move.from[0]][move.from[1]];
-        score -= getPieceValue(movingPiece.piece) * 5;
-      }
-
-      // Favor central control
-      const distFromCenter =
-        Math.abs(move.to[0] - 3.5) + Math.abs(move.to[1] - 3.5);
-      score += (7 - distFromCenter) * 2;
-
-      return { move, score };
+    // Try GenAI endpoint first
+    const move = await getGenAIMove({
+      game: "chess",
+      state: { board, legalMoves: allMoves },
     });
-
-    // Sort by score and pick the best
-    scoredMoves.sort((a, b) => b.score - a.score);
-    const bestMove = scoredMoves[0].move;
-
+    let chosenMove = null;
+    if (move && typeof move === "object" && move.from && move.to) {
+      // Validate move is legal
+      if (
+        allMoves.some(
+          (m) =>
+            m.from[0] === move.from[0] &&
+            m.from[1] === move.from[1] &&
+            m.to[0] === move.to[0] &&
+            m.to[1] === move.to[1],
+        )
+      ) {
+        chosenMove = move;
+      }
+    }
+    // Fallback: local scoring logic
+    if (!chosenMove) {
+      const scoredMoves = allMoves.map((move) => {
+        let score = 0;
+        const testBoard = board.map((r) => [...r]);
+        const piece = testBoard[move.from[0]][move.from[1]];
+        testBoard[move.to[0]][move.to[1]] = piece;
+        testBoard[move.from[0]][move.from[1]] = null;
+        if (
+          !getLegalMoves("white", testBoard).length &&
+          isKingInCheck("white", testBoard)
+        ) {
+          score += 50000;
+        } else if (isKingInCheck("white", testBoard)) {
+          score += 200;
+        }
+        if (
+          isKingInCheck("black", board) &&
+          !isKingInCheck("black", testBoard)
+        ) {
+          score += 5000;
+        }
+        const capturedPiece = board[move.to[0]][move.to[1]];
+        if (capturedPiece) {
+          score += getPieceValue(capturedPiece.piece) * 10;
+        }
+        if (
+          isSquareAttackedByColor(move.to[0], move.to[1], "white", testBoard)
+        ) {
+          const movingPiece = board[move.from[0]][move.from[1]];
+          score -= getPieceValue(movingPiece.piece) * 5;
+        }
+        const distFromCenter =
+          Math.abs(move.to[0] - 3.5) + Math.abs(move.to[1] - 3.5);
+        score += (7 - distFromCenter) * 2;
+        return { move, score };
+      });
+      scoredMoves.sort((a, b) => b.score - a.score);
+      chosenMove = scoredMoves[0].move;
+    }
+    // Play the move
     const newBoard = board.map((r) => [...r]);
-    const piece = newBoard[bestMove.from[0]][bestMove.from[1]];
-    newBoard[bestMove.to[0]][bestMove.to[1]] = piece;
-    newBoard[bestMove.from[0]][bestMove.from[1]] = null;
-
+    const piece = newBoard[chosenMove.from[0]][chosenMove.from[1]];
+    newBoard[chosenMove.to[0]][chosenMove.to[1]] = piece;
+    newBoard[chosenMove.from[0]][chosenMove.from[1]] = null;
     setBoard(newBoard);
     setMoveHistory([
       ...moveHistory,
-      `${String.fromCharCode(65 + bestMove.from[1])}${8 - bestMove.from[0]} → ${String.fromCharCode(65 + bestMove.to[1])}${8 - bestMove.to[0]}`,
+      `${String.fromCharCode(65 + chosenMove.from[1])}${8 - chosenMove.from[0]} → ${String.fromCharCode(65 + chosenMove.to[1])}${8 - chosenMove.to[0]}`,
     ]);
     setCurrentPlayer("white");
     setSelectedSquare(null);
     setValidMoves([]);
-
     // Check game status after AI's move
     const whiteLegalMoves = getLegalMoves("white", newBoard);
     if (whiteLegalMoves.length === 0) {
@@ -315,11 +323,23 @@ export default function Chess() {
     const moves = [];
     const pieceName = piece.piece.toUpperCase();
 
-    const addMove = (r, c) => {
+    // Add promotion support: if pawn reaches last rank, add promotion moves
+    const addMove = (r, c, promotion = null) => {
       if (r >= 0 && r < 8 && c >= 0 && c < 8) {
         const target = boardToUse[r][c];
         if (!target || target.color !== piece.color) {
-          moves.push({ from: [row, col], to: [r, c] });
+          // If this is a pawn move to last rank, add promotion options
+          if (
+            pieceName === "P" &&
+            ((piece.color === "white" && r === 0) ||
+              (piece.color === "black" && r === 7))
+          ) {
+            ["q", "r", "b", "n"].forEach((promo) => {
+              moves.push({ from: [row, col], to: [r, c], promotion: promo });
+            });
+          } else {
+            moves.push({ from: [row, col], to: [r, c] });
+          }
         }
       }
     };
@@ -329,21 +349,33 @@ export default function Chess() {
       const direction = piece.color === "white" ? -1 : 1;
       const startRow = piece.color === "white" ? 6 : 1;
 
-      if (boardToUse[row + direction]?.[col] === null) {
+      // Forward move (one square)
+      const oneForward = boardToUse[row + direction]?.[col];
+      if (oneForward === null) {
         addMove(row + direction, col);
-
-        if (
-          row === startRow &&
-          boardToUse[row + 2 * direction]?.[col] === null
-        ) {
+        // Forward move (two squares from start)
+        const twoForward = boardToUse[row + 2 * direction]?.[col];
+        if (row === startRow && twoForward === null) {
           addMove(row + 2 * direction, col);
         }
       }
 
-      if (boardToUse[row + direction]?.[col - 1]?.color !== piece.color) {
+      // Captures (diagonal left)
+      if (
+        col - 1 >= 0 &&
+        boardToUse[row + direction]?.[col - 1] &&
+        boardToUse[row + direction][col - 1] !== null &&
+        boardToUse[row + direction][col - 1].color !== piece.color
+      ) {
         addMove(row + direction, col - 1);
       }
-      if (boardToUse[row + direction]?.[col + 1]?.color !== piece.color) {
+      // Captures (diagonal right)
+      if (
+        col + 1 < 8 &&
+        boardToUse[row + direction]?.[col + 1] &&
+        boardToUse[row + direction][col + 1] !== null &&
+        boardToUse[row + direction][col + 1].color !== piece.color
+      ) {
         addMove(row + direction, col + 1);
       }
     }
@@ -432,21 +464,48 @@ export default function Chess() {
           testBoard[move.from[0]][move.from[1]] = null;
           return !isKingInCheck(currentPlayer, testBoard);
         });
-        setValidMoves(legalMoves.map((m) => `${m.to[0]}-${m.to[1]}`));
+        // Store full move objects for valid moves
+        setValidMoves(legalMoves);
       }
     } else {
-      const moveKey = `${row}-${col}`;
-      if (validMoves.includes(moveKey)) {
-        // Make the move
+      // Find the move object matching the clicked destination
+      const chosenMove = validMoves.find(
+        (m) => m.to[0] === row && m.to[1] === col,
+      );
+      if (chosenMove) {
+        // Play the move (with promotion support)
         const newBoard = board.map((r) => [...r]);
-        const piece = newBoard[selectedSquare.row][selectedSquare.col];
-        newBoard[row][col] = piece;
-        newBoard[selectedSquare.row][selectedSquare.col] = null;
-
+        let piece = newBoard[chosenMove.from[0]][chosenMove.from[1]];
+        // If promotion, replace pawn with promoted piece
+        if (chosenMove.promotion) {
+          piece = {
+            piece:
+              chosenMove.promotion === "q"
+                ? piece.color === "white"
+                  ? "Q"
+                  : "q"
+                : chosenMove.promotion === "r"
+                  ? piece.color === "white"
+                    ? "R"
+                    : "r"
+                  : chosenMove.promotion === "b"
+                    ? piece.color === "white"
+                      ? "B"
+                      : "b"
+                    : chosenMove.promotion === "n"
+                      ? piece.color === "white"
+                        ? "N"
+                        : "n"
+                      : piece.piece,
+            color: piece.color,
+          };
+        }
+        newBoard[chosenMove.to[0]][chosenMove.to[1]] = piece;
+        newBoard[chosenMove.from[0]][chosenMove.from[1]] = null;
         setBoard(newBoard);
         setMoveHistory([
           ...moveHistory,
-          `${String.fromCharCode(65 + selectedSquare.col)}${8 - selectedSquare.row} → ${String.fromCharCode(65 + col)}${8 - row}`,
+          `${String.fromCharCode(65 + chosenMove.from[1])}${8 - chosenMove.from[0]} → ${String.fromCharCode(65 + chosenMove.to[1])}${8 - chosenMove.to[0]}${chosenMove.promotion ? "=" + chosenMove.promotion.toUpperCase() : ""}`,
         ]);
         setCurrentPlayer("black");
         setSelectedSquare(null);
@@ -476,7 +535,7 @@ export default function Chess() {
           testBoard[move.from[0]][move.from[1]] = null;
           return !isKingInCheck(currentPlayer, testBoard);
         });
-        setValidMoves(legalMoves.map((m) => `${m.to[0]}-${m.to[1]}`));
+        setValidMoves(legalMoves);
       } else {
         setSelectedSquare(null);
         setValidMoves([]);
@@ -624,7 +683,9 @@ export default function Chess() {
           {board.map((row, rowIndex) =>
             row.map((square, colIndex) => {
               const key = `${rowIndex}-${colIndex}`;
-              const isValid = validMoves.includes(key);
+              const isValid = validMoves.some(
+                (m) => m.to[0] === rowIndex && m.to[1] === colIndex,
+              );
 
               return (
                 <div

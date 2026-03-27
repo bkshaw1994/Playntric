@@ -230,3 +230,18 @@ Playntric - A fun collection of classic games for everyone to enjoy! 🎉
 ---
 
 **Have fun playing! 🎮**
+
+## GenAI Bot Integration
+
+- **Tic Tac Toe** and **Chess** bot modes now support GenAI-powered moves via a serverless API endpoint (`/api/genai-move`).
+- By default, the endpoint returns a random valid move for demo and safety. To enable real GenAI, replace the logic in `api/genai-move.js` with your preferred AI model call (e.g., OpenAI, Azure, or custom LLM).
+- The client will always fall back to the original local AI logic if the GenAI API is unavailable or returns an invalid move, so gameplay is never blocked.
+- Extend or secure the endpoint as needed for your deployment.
+
+**How it works:**
+
+- When playing vs Bot, the game sends the current board (and legal moves for Chess) to the endpoint.
+- The endpoint returns the move to play, which is validated before being applied.
+- If the endpoint fails or returns an invalid move, the local AI logic is used instead.
+
+See `src/lib/genaiBot.js` and `api/genai-move.js` for details.
