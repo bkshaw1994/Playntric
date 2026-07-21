@@ -55,41 +55,7 @@ export default function TicTacToe() {
       }
     }
   }, [gameStatus]);
-}
 
-// GenAI bot move (with fallback)
-const makeAIMove = async () => {
-  // Try GenAI endpoint first
-  const move = await getGenAIMove({ game: "tictactoe", state: { board } });
-  if (typeof move === "number" && board[move] === null) {
-    playMove(move);
-    return;
-  }
-  // Fallback: local logic
-  const emptySquares = board
-    .map((square, idx) => (square === null ? idx : null))
-    .filter((val) => val !== null);
-  if (emptySquares.length === 0) return;
-  const winningMove = findWinningMove(board, "O");
-  if (winningMove !== null) {
-    playMove(winningMove);
-    return;
-  }
-  const blockingMove = findWinningMove(board, "X");
-  if (blockingMove !== null) {
-    playMove(blockingMove);
-    return;
-  }
-  if (board[4] === null) {
-    playMove(4);
-    return;
-  }
-  const corners = [0, 2, 6, 8].filter((idx) => board[idx] === null);
-  if (corners.length > 0) {
-    playMove(corners[Math.floor(Math.random() * corners.length)]);
-    return;
-  }
-  playMove(emptySquares[Math.floor(Math.random() * emptySquares.length)]);
   const calculateWinner = (squares) => {
     const lines = [
       [0, 1, 2],
@@ -99,7 +65,6 @@ const makeAIMove = async () => {
       [1, 4, 7],
       [2, 5, 8],
       [0, 4, 8],
-      // eslint-disable-next-line
       [2, 4, 6],
     ];
     for (let i = 0; i < lines.length; i++) {
@@ -116,43 +81,6 @@ const makeAIMove = async () => {
   };
 
   const isBoardFull = (squares) => squares.every((square) => square !== null);
-
-  const makeAIMove = () => {
-    const emptySquares = board
-      .map((square, idx) => (square === null ? idx : null))
-      .filter((val) => val !== null);
-
-    if (emptySquares.length === 0) return;
-
-    // Simple AI logic
-    const winningMove = findWinningMove(board, "O");
-    if (winningMove !== null) {
-      playMove(winningMove);
-      return;
-    }
-
-    const blockingMove = findWinningMove(board, "X");
-    if (blockingMove !== null) {
-      playMove(blockingMove);
-      return;
-    }
-
-    // Take center if available
-    if (board[4] === null) {
-      playMove(4);
-      return;
-    }
-
-    // Take corners
-    const corners = [0, 2, 6, 8].filter((idx) => board[idx] === null);
-    if (corners.length > 0) {
-      playMove(corners[Math.floor(Math.random() * corners.length)]);
-      return;
-    }
-
-    // Take any available
-    playMove(emptySquares[Math.floor(Math.random() * emptySquares.length)]);
-  };
 
   const findWinningMove = (squares, player) => {
     for (let i = 0; i < 9; i++) {
@@ -183,6 +111,47 @@ const makeAIMove = async () => {
     }
 
     setIsXNext(!isXNext);
+  };
+
+  // GenAI bot move (with local fallback)
+  const makeAIMove = async () => {
+    // Try GenAI endpoint first
+    const move = await getGenAIMove({ game: "tictactoe", state: { board } });
+    if (typeof move === "number" && board[move] === null) {
+      playMove(move);
+      return;
+    }
+
+    // Fallback: local logic
+    const emptySquares = board
+      .map((square, idx) => (square === null ? idx : null))
+      .filter((val) => val !== null);
+    if (emptySquares.length === 0) return;
+
+    const winningMove = findWinningMove(board, "O");
+    if (winningMove !== null) {
+      playMove(winningMove);
+      return;
+    }
+
+    const blockingMove = findWinningMove(board, "X");
+    if (blockingMove !== null) {
+      playMove(blockingMove);
+      return;
+    }
+
+    if (board[4] === null) {
+      playMove(4);
+      return;
+    }
+
+    const corners = [0, 2, 6, 8].filter((idx) => board[idx] === null);
+    if (corners.length > 0) {
+      playMove(corners[Math.floor(Math.random() * corners.length)]);
+      return;
+    }
+
+    playMove(emptySquares[Math.floor(Math.random() * emptySquares.length)]);
   };
 
   const handleSquareClick = (index) => {
@@ -341,4 +310,4 @@ const makeAIMove = async () => {
       )}
     </div>
   );
-};
+}

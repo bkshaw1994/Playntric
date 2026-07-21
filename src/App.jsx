@@ -7,6 +7,8 @@ import FAQPage from "./pages/FAQPage";
 import RulesPage from "./pages/RulesPage";
 import DailyChallengesPage from "./pages/DailyChallengesPage";
 import GameOfDayPage from "./pages/GameOfDayPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import NotFound from "./pages/NotFound";
 import Sudoku from "./games/sudoku/Sudoku";
 import Chess from "./games/chess/Chess";
 import Wordle from "./games/wordle/Wordle";
@@ -44,6 +46,8 @@ function AppInner() {
               <Route path="/wordle" element={<Wordle />} />
               <Route path="/tictactoe" element={<TicTacToe />} />
               <Route path="/mathspeed" element={<MathSpeedChallenge />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <aside className="ad-sidebar ad-sidebar-right">
@@ -57,6 +61,7 @@ function AppInner() {
           <div className="footer-links">
             <Link to="/faqs">FAQs</Link>
             <Link to="/rules">Rules of the Game</Link>
+            <Link to="/leaderboard">Leaderboard</Link>
           </div>
         </footer>
         {!playerName && <PlayerNameModal />}
