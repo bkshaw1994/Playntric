@@ -19,6 +19,11 @@ export default function Chess() {
   const [gameStatus, setGameStatus] = useState("playing"); // 'playing', 'checkmate', 'check', 'stalemate'
   const [onlineCode, setOnlineCode] = useState("");
   const [validMoves, setValidMoves] = useState([]);
+  const [castlingRights, setCastlingRights] = useState({
+    white: { kingside: true, queenside: true },
+    black: { kingside: true, queenside: true },
+  });
+  const [enPassantTarget, setEnPassantTarget] = useState(null);
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Game",
@@ -103,6 +108,155 @@ export default function Chess() {
     setMoveHistory([]);
     setGameStatus("playing");
     setValidMoves([]);
+    setCastlingRights({
+      white: { kingside: true, queenside: true },
+      black: { kingside: true, queenside: true },
+    });
+    setEnPassantTarget(null);
+  };
+
+  // Apply a move (incl. castling, en passant, promotion) to a board copy.
+  const applyMoveToBoard = (sourceBoard, move) => {
+    const nb = sourceBoard.map((r) => [...r]);
+    const piece = nb[move.from[0]][move.from[1]];
+
+    if (move.enPassant) {
+      // Captured pawn sits on the mover's start row, destination column.
+      nb[move.from[0]][move.to[1]] = null;
+    }
+
+    if (move.castle) {
+      const row = move.from[0];
+      if (move.castle === "kingside") {
+        nb[row][5] = nb[row][7];
+        nb[row][7] = null;
+      } else {
+        nb[row][3] = nb[row][0];
+        nb[row][0] = null;
+      }
+    }
+
+    let placed = piece;
+    if (move.promotion) {
+      const map = { q: "Q", r: "R", b: "B", n: "N" };
+      const letter = map[move.promotion] || "Q";
+      placed = {
+        piece: piece.color === "white" ? letter : letter.toLowerCase(),
+        color: piece.color,
+      };
+    }
+
+    nb[move.to[0]][move.to[1]] = placed;
+    nb[move.from[0]][move.from[1]] = null;
+    return nb;
+  };
+
+  // Human-readable move notation for the history panel.
+  const formatMove = (move) => {
+    if (move.castle === "kingside") return "O-O";
+    if (move.castle === "queenside") return "O-O-O";
+    const from = `${String.fromCharCode(65 + move.from[1])}${8 - move.from[0]}`;
+    const to = `${String.fromCharCode(65 + move.to[1])}${8 - move.to[0]}`;
+    let text = `${from} → ${to}`;
+    if (move.promotion) text += `=${move.promotion.toUpperCase()}`;
+    if (move.enPassant) text += " e.p.";
+    return text;
+  };
+
+  // Recompute castling rights after a move (king/rook moved or rook captured).
+  const nextCastlingRights = (rights, move) => {
+    const nr = {
+      white: { ...rights.white },
+      black: { ...rights.black },
+    };
+    const revoke = (r, c) => {
+      if (r === 7 && c === 4) {
+        nr.white.kingside = false;
+        nr.white.queenside = false;
+      }
+      if (r === 0 && c === 4) {
+        nr.black.kingside = false;
+        nr.black.queenside = false;
+      }
+      if (r === 7 && c === 0) nr.white.queenside = false;
+      if (r === 7 && c === 7) nr.white.kingside = false;
+      if (r === 0 && c === 0) nr.black.queenside = false;
+      if (r === 0 && c === 7) nr.black.kingside = false;
+    };
+    revoke(move.from[0], move.from[1]);
+    revoke(move.to[0], move.to[1]);
+    return nr;
+  };
+
+  // En passant target square created by a two-square pawn advance.
+  const nextEnPassantTarget = (move, piece) => {
+    if (
+      piece?.piece.toUpperCase() === "P" &&
+      Math.abs(move.to[0] - move.from[0]) === 2
+    ) {
+      return [(move.from[0] + move.to[0]) / 2, move.from[1]];
+    }
+    return null;
+  };
+
+  // Castling moves for a color, fully rule-checked (rights, empty path,
+  // not castling out of / through / into check).
+  const getCastlingMoves = (color, boardToUse, rights) => {
+    const row = color === "white" ? 7 : 0;
+    const king = boardToUse[row][4];
+    if (!king || king.piece.toUpperCase() !== "K" || king.color !== color) {
+      return [];
+    }
+    if (isKingInCheck(color, boardToUse)) return [];
+    const enemy = color === "white" ? "black" : "white";
+    const moves = [];
+
+    if (rights[color].kingside) {
+      const rook = boardToUse[row][7];
+      if (
+        rook?.piece.toUpperCase() === "R" &&
+        rook.color === color &&
+        !boardToUse[row][5] &&
+        !boardToUse[row][6] &&
+        !isSquareAttackedByColor(row, 5, enemy, boardToUse) &&
+        !isSquareAttackedByColor(row, 6, enemy, boardToUse)
+      ) {
+        moves.push({ from: [row, 4], to: [row, 6], castle: "kingside" });
+      }
+    }
+
+    if (rights[color].queenside) {
+      const rook = boardToUse[row][0];
+      if (
+        rook?.piece.toUpperCase() === "R" &&
+        rook.color === color &&
+        !boardToUse[row][1] &&
+        !boardToUse[row][2] &&
+        !boardToUse[row][3] &&
+        !isSquareAttackedByColor(row, 3, enemy, boardToUse) &&
+        !isSquareAttackedByColor(row, 2, enemy, boardToUse)
+      ) {
+        moves.push({ from: [row, 4], to: [row, 2], castle: "queenside" });
+      }
+    }
+
+    return moves;
+  };
+
+  // Legal moves for a piece including special moves, filtered so they never
+  // leave the mover's king in check. Used for the interactive board.
+  const getLegalMovesForPiece = (row, col) => {
+    const piece = board[row][col];
+    if (!piece) return [];
+    let moves = getValidMovesForPiece(row, col, board, enPassantTarget);
+    if (piece.piece.toUpperCase() === "K") {
+      moves = moves.concat(
+        getCastlingMoves(piece.color, board, castlingRights),
+      );
+    }
+    return moves.filter(
+      (move) => !isKingInCheck(piece.color, applyMoveToBoard(board, move)),
+    );
   };
 
   const getPieceValue = (piece) => {
@@ -198,18 +352,16 @@ export default function Chess() {
     });
     let chosenMove = null;
     if (move && typeof move === "object" && move.from && move.to) {
-      // Validate move is legal
-      if (
-        allMoves.some(
+      // Validate move is legal; use the matching legal move so special-move
+      // flags (castle / en passant / promotion) are preserved.
+      chosenMove =
+        allMoves.find(
           (m) =>
             m.from[0] === move.from[0] &&
             m.from[1] === move.from[1] &&
             m.to[0] === move.to[0] &&
             m.to[1] === move.to[1],
-        )
-      ) {
-        chosenMove = move;
-      }
+        ) || null;
     }
     // Fallback: local scoring logic
     if (!chosenMove) {
@@ -252,15 +404,12 @@ export default function Chess() {
       chosenMove = scoredMoves[0].move;
     }
     // Play the move
-    const newBoard = board.map((r) => [...r]);
-    const piece = newBoard[chosenMove.from[0]][chosenMove.from[1]];
-    newBoard[chosenMove.to[0]][chosenMove.to[1]] = piece;
-    newBoard[chosenMove.from[0]][chosenMove.from[1]] = null;
+    const movingPiece = board[chosenMove.from[0]][chosenMove.from[1]];
+    const newBoard = applyMoveToBoard(board, chosenMove);
     setBoard(newBoard);
-    setMoveHistory([
-      ...moveHistory,
-      `${String.fromCharCode(65 + chosenMove.from[1])}${8 - chosenMove.from[0]} → ${String.fromCharCode(65 + chosenMove.to[1])}${8 - chosenMove.to[0]}`,
-    ]);
+    setCastlingRights((prev) => nextCastlingRights(prev, chosenMove));
+    setEnPassantTarget(nextEnPassantTarget(chosenMove, movingPiece));
+    setMoveHistory([...moveHistory, formatMove(chosenMove)]);
     setCurrentPlayer("white");
     setSelectedSquare(null);
     setValidMoves([]);
@@ -280,25 +429,23 @@ export default function Chess() {
   };
 
   const getLegalMoves = (color, testBoard = null) => {
-    const rawMoves = getAllPossibleMoves(color, testBoard);
     const boardToUse = testBoard || board;
-    const legalMoves = [];
-
-    for (const move of rawMoves) {
-      const testMovedBoard = boardToUse.map((r) => [...r]);
-      const piece = testMovedBoard[move.from[0]][move.from[1]];
-      testMovedBoard[move.to[0]][move.to[1]] = piece;
-      testMovedBoard[move.from[0]][move.from[1]] = null;
-
-      // Only allow moves that don't leave king in check
-      if (!isKingInCheck(color, testMovedBoard)) {
-        legalMoves.push(move);
-      }
+    // Special moves (en passant / castling) depend on live state, so only
+    // include them when evaluating the actual current position.
+    const epTarget = testBoard ? null : enPassantTarget;
+    let rawMoves = getAllPossibleMoves(color, boardToUse, epTarget);
+    if (!testBoard) {
+      rawMoves = rawMoves.concat(
+        getCastlingMoves(color, boardToUse, castlingRights),
+      );
     }
-    return legalMoves;
+
+    return rawMoves.filter(
+      (move) => !isKingInCheck(color, applyMoveToBoard(boardToUse, move)),
+    );
   };
 
-  const getAllPossibleMoves = (color, testBoard = null) => {
+  const getAllPossibleMoves = (color, testBoard = null, epTarget = null) => {
     const moves = [];
     const boardToUse = testBoard || board;
 
@@ -306,7 +453,12 @@ export default function Chess() {
       for (let col = 0; col < 8; col++) {
         const piece = boardToUse[row][col];
         if (piece && piece.color === color) {
-          const pieceMoves = getValidMovesForPiece(row, col, boardToUse);
+          const pieceMoves = getValidMovesForPiece(
+            row,
+            col,
+            boardToUse,
+            epTarget,
+          );
           moves.push(...pieceMoves);
         }
       }
@@ -315,7 +467,7 @@ export default function Chess() {
     return moves;
   };
 
-  const getValidMovesForPiece = (row, col, testBoard = null) => {
+  const getValidMovesForPiece = (row, col, testBoard = null, epTarget = null) => {
     const boardToUse = testBoard || board;
     const piece = boardToUse[row][col];
     if (!piece) return [];
@@ -377,6 +529,14 @@ export default function Chess() {
         boardToUse[row + direction][col + 1].color !== piece.color
       ) {
         addMove(row + direction, col + 1);
+      }
+
+      // En passant
+      if (epTarget) {
+        const [er, ec] = epTarget;
+        if (er === row + direction && Math.abs(ec - col) === 1) {
+          moves.push({ from: [row, col], to: [er, ec], enPassant: true });
+        }
       }
     }
 
@@ -455,58 +615,21 @@ export default function Chess() {
     if (selectedSquare === null) {
       if (board[row][col]?.color === currentPlayer) {
         setSelectedSquare({ row, col });
-        const moves = getValidMovesForPiece(row, col);
-        // Filter out moves that would leave king in check
-        const legalMoves = moves.filter((move) => {
-          const testBoard = board.map((r) => [...r]);
-          const piece = testBoard[move.from[0]][move.from[1]];
-          testBoard[move.to[0]][move.to[1]] = piece;
-          testBoard[move.from[0]][move.from[1]] = null;
-          return !isKingInCheck(currentPlayer, testBoard);
-        });
-        // Store full move objects for valid moves
-        setValidMoves(legalMoves);
+        setValidMoves(getLegalMovesForPiece(row, col));
       }
     } else {
-      // Find the move object matching the clicked destination
+      // Find the move object matching the clicked destination (first match
+      // for a promotion square defaults to queen).
       const chosenMove = validMoves.find(
         (m) => m.to[0] === row && m.to[1] === col,
       );
       if (chosenMove) {
-        // Play the move (with promotion support)
-        const newBoard = board.map((r) => [...r]);
-        let piece = newBoard[chosenMove.from[0]][chosenMove.from[1]];
-        // If promotion, replace pawn with promoted piece
-        if (chosenMove.promotion) {
-          piece = {
-            piece:
-              chosenMove.promotion === "q"
-                ? piece.color === "white"
-                  ? "Q"
-                  : "q"
-                : chosenMove.promotion === "r"
-                  ? piece.color === "white"
-                    ? "R"
-                    : "r"
-                  : chosenMove.promotion === "b"
-                    ? piece.color === "white"
-                      ? "B"
-                      : "b"
-                    : chosenMove.promotion === "n"
-                      ? piece.color === "white"
-                        ? "N"
-                        : "n"
-                      : piece.piece,
-            color: piece.color,
-          };
-        }
-        newBoard[chosenMove.to[0]][chosenMove.to[1]] = piece;
-        newBoard[chosenMove.from[0]][chosenMove.from[1]] = null;
+        const movingPiece = board[chosenMove.from[0]][chosenMove.from[1]];
+        const newBoard = applyMoveToBoard(board, chosenMove);
         setBoard(newBoard);
-        setMoveHistory([
-          ...moveHistory,
-          `${String.fromCharCode(65 + chosenMove.from[1])}${8 - chosenMove.from[0]} → ${String.fromCharCode(65 + chosenMove.to[1])}${8 - chosenMove.to[0]}${chosenMove.promotion ? "=" + chosenMove.promotion.toUpperCase() : ""}`,
-        ]);
+        setCastlingRights((prev) => nextCastlingRights(prev, chosenMove));
+        setEnPassantTarget(nextEnPassantTarget(chosenMove, movingPiece));
+        setMoveHistory([...moveHistory, formatMove(chosenMove)]);
         setCurrentPlayer("black");
         setSelectedSquare(null);
         setValidMoves([]);
@@ -526,16 +649,7 @@ export default function Chess() {
         }
       } else if (board[row][col]?.color === currentPlayer) {
         setSelectedSquare({ row, col });
-        const moves = getValidMovesForPiece(row, col);
-        // Filter out moves that would leave king in check
-        const legalMoves = moves.filter((move) => {
-          const testBoard = board.map((r) => [...r]);
-          const piece = testBoard[move.from[0]][move.from[1]];
-          testBoard[move.to[0]][move.to[1]] = piece;
-          testBoard[move.from[0]][move.from[1]] = null;
-          return !isKingInCheck(currentPlayer, testBoard);
-        });
-        setValidMoves(legalMoves);
+        setValidMoves(getLegalMovesForPiece(row, col));
       } else {
         setSelectedSquare(null);
         setValidMoves([]);
