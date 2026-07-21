@@ -94,9 +94,16 @@ export default function MathSpeedChallenge() {
       case "*":
         answer = num1 * num2;
         break;
-      case "/":
-        answer = Math.round((num1 / num2) * 100) / 100;
+      case "/": {
+        // Build a clean division with a whole-number answer:
+        // dividend = divisor * quotient.
+        const divisor = Math.max(1, num2);
+        const quotient = Math.max(1, num1);
+        num1 = divisor * quotient;
+        num2 = divisor;
+        answer = quotient;
         break;
+      }
       default:
         answer = 0;
     }

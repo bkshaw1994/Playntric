@@ -20,19 +20,19 @@ export default function Wordle() {
   };
   const WORD_LIST = [
     "REACT",
-    "VITES",
     "GAMES",
     "CHESS",
-    "LUDIO",
-    "PUZZLE",
     "WORDS",
-    "BUILDING",
-    "JAVASCRIPT",
-    "FRONTEND",
-    "CODING",
-    "PLAYER",
-    "WINNING",
-    "CHALLENGE",
+    "BOARD",
+    "MOVES",
+    "SCORE",
+    "BRAIN",
+    "LOGIC",
+    "SOLVE",
+    "PIECE",
+    "QUEEN",
+    "ROUND",
+    "GUESS",
   ];
 
   const [targetWord, setTargetWord] = useState("");
@@ -66,11 +66,8 @@ export default function Wordle() {
     if (gameStatus !== "playing") return;
 
     if (e.key === "Enter") {
+      e.preventDefault();
       submitGuess();
-    } else if (e.key === "Backspace") {
-      setCurrentGuess(currentGuess.slice(0, -1));
-    } else if (/^[a-zA-Z]$/.test(e.key) && currentGuess.length < 5) {
-      setCurrentGuess((currentGuess + e.key).toUpperCase());
     }
   };
 
@@ -219,6 +216,11 @@ export default function Wordle() {
             type="text"
             maxLength="5"
             value={currentGuess}
+            onChange={(e) =>
+              setCurrentGuess(
+                e.target.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 5),
+              )
+            }
             onKeyDown={handleKeyDown}
             placeholder="Type a word..."
             disabled={gameStatus !== "playing"}
