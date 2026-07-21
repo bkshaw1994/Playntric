@@ -625,24 +625,25 @@ export default function Chess() {
       );
       if (chosenMove) {
         const movingPiece = board[chosenMove.from[0]][chosenMove.from[1]];
+        const opponent = movingPiece.color === "white" ? "black" : "white";
         const newBoard = applyMoveToBoard(board, chosenMove);
         setBoard(newBoard);
         setCastlingRights((prev) => nextCastlingRights(prev, chosenMove));
         setEnPassantTarget(nextEnPassantTarget(chosenMove, movingPiece));
         setMoveHistory([...moveHistory, formatMove(chosenMove)]);
-        setCurrentPlayer("black");
+        setCurrentPlayer(opponent);
         setSelectedSquare(null);
         setValidMoves([]);
 
-        // Check game status after white's move
-        const blackLegalMoves = getLegalMoves("black", newBoard);
-        if (blackLegalMoves.length === 0) {
-          if (isKingInCheck("black", newBoard)) {
+        // Check game status for the side to move next
+        const opponentLegalMoves = getLegalMoves(opponent, newBoard);
+        if (opponentLegalMoves.length === 0) {
+          if (isKingInCheck(opponent, newBoard)) {
             setGameStatus("checkmate");
           } else {
             setGameStatus("stalemate");
           }
-        } else if (isKingInCheck("black", newBoard)) {
+        } else if (isKingInCheck(opponent, newBoard)) {
           setGameStatus("check");
         } else {
           setGameStatus("playing");

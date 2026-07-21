@@ -9,8 +9,15 @@ const FALLBACK_WORDS = {
   6: ["PUZZLE", "PLAYER", "WINNER", "CASTLE", "KNIGHT", "MEMORY", "STREAK"],
 };
 
+function randomIndex(size) {
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  // Rejection-free modulo is fine here: bias is negligible for small lists.
+  return buf[0] % size;
+}
+
 function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[randomIndex(arr.length)];
 }
 
 // Returns a random uppercase dictionary word of exactly `length` letters.
