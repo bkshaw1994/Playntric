@@ -3,12 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Gamepad2,
   ArrowRight,
-  Sparkles,
   Search,
-  Zap,
-  ShieldCheck,
-  Trophy,
-  Filter,
 } from "lucide-react";
 import Seo from "../components/common/Seo";
 import { GAMES } from "../constants/games";
@@ -86,69 +81,30 @@ export default function Home() {
         structuredData={structuredData}
       />
 
-      {/* Hero Banner */}
-      <section className="hero-section">
-        <div className="hero-badge">
-          <Sparkles size={16} /> <span>100% Free Instant Browser Games</span>
-        </div>
-        <h1 className="hero-title">
-          LEVEL UP YOUR <span className="hero-gradient-text">MIND</span>
-        </h1>
-        <p className="hero-subtitle">
-          Jump into strategic, puzzle, word & math challenges directly in your browser.
-          No downloads, no installations.
-        </p>
-
-        {/* Search & Filter Bar */}
-        <div className="hero-controls">
-          <div className="search-input-wrap">
-            <Search size={18} className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search games (e.g. Chess, Sudoku...)"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="game-search-input"
-            />
-          </div>
-
-          <div className="category-filter-chips">
-            {CATEGORIES.map((cat) => (
-              <button
-                type="button"
-                key={cat}
-                className={`filter-chip ${activeCategory === cat ? "active" : ""}`}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+      {/* Top Search & Category Filter Bar */}
+      <section className="portal-toolbar">
+        <div className="search-input-wrap">
+          <Search size={18} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search games (e.g. Chess, Sudoku...)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="game-search-input"
+          />
         </div>
 
-        {/* Platform Feature Stats */}
-        <div className="hero-stats-row">
-          <div className="stat-card">
-            <Zap size={20} className="stat-icon cyan" />
-            <div>
-              <p className="stat-val">Instant Play</p>
-              <p className="stat-label">Zero Load Lag</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <Trophy size={20} className="stat-icon violet" />
-            <div>
-              <p className="stat-val">Leaderboards</p>
-              <p className="stat-label">High Score Tracking</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <ShieldCheck size={20} className="stat-icon emerald" />
-            <div>
-              <p className="stat-val">100% Secure</p>
-              <p className="stat-label">AdSense Verified</p>
-            </div>
-          </div>
+        <div className="category-filter-chips">
+          {CATEGORIES.map((cat) => (
+            <button
+              type="button"
+              key={cat}
+              className={`filter-chip ${activeCategory === cat ? "active" : ""}`}
+              onClick={() => setActiveCategory(cat)}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </section>
 
