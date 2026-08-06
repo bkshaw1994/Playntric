@@ -98,7 +98,6 @@ export default function TicTacToe() {
       [1, 4, 7],
       [2, 5, 8],
       [0, 4, 8],
-      // eslint-disable-next-line
       [2, 4, 6],
     ];
     for (let i = 0; i < lines.length; i++) {

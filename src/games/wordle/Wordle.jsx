@@ -5,6 +5,15 @@ import Seo from "../../components/common/Seo";
 import { saveScore } from "../../components/common/Leaderboard";
 import { usePlayer } from "../../context/PlayerContext";
 
+const getSecureRandomIndex = (max) => {
+  if (typeof window !== "undefined" && window.crypto && window.crypto.getRandomValues) {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return array[0] % max;
+  }
+  return Math.floor(Math.random() * max);
+};
+
 export default function Wordle() {
   const { playerName } = usePlayer();
   const structuredData = {
@@ -18,6 +27,7 @@ export default function Wordle() {
     applicationCategory: "Game",
     operatingSystem: "Any",
   };
+
   const WORD_LIST = [
     "REACT",
     "CHESS",
@@ -58,7 +68,8 @@ export default function Wordle() {
   }, []);
 
   const initializeGame = () => {
-    const randomWord = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
+    const randomIndex = getSecureRandomIndex(WORD_LIST.length);
+    const randomWord = WORD_LIST[randomIndex];
     setTargetWord(randomWord);
     setGuesses([]);
     setCurrentGuess("");
@@ -180,6 +191,7 @@ export default function Wordle() {
               {["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"].map(
                 (letter) => (
                   <button
+                    type="button"
                     key={letter}
                     className={`key ${usedLetters.has(letter) ? "used" : ""}`}
                     onClick={() => handleLetterClick(letter)}
@@ -193,6 +205,7 @@ export default function Wordle() {
             <div className="keyboard">
               {["A", "S", "D", "F", "G", "H", "J", "K", "L"].map((letter) => (
                 <button
+                  type="button"
                   key={letter}
                   className={`key ${usedLetters.has(letter) ? "used" : ""}`}
                   onClick={() => handleLetterClick(letter)}
@@ -205,6 +218,7 @@ export default function Wordle() {
             <div className="keyboard">
               {["Z", "X", "C", "V", "B", "N", "M"].map((letter) => (
                 <button
+                  type="button"
                   key={letter}
                   className={`key ${usedLetters.has(letter) ? "used" : ""}`}
                   onClick={() => handleLetterClick(letter)}
@@ -214,6 +228,7 @@ export default function Wordle() {
                 </button>
               ))}
               <button
+                type="button"
                 className="key backspace"
                 onClick={handleBackspace}
                 disabled={gameStatus !== "playing"}
@@ -237,6 +252,7 @@ export default function Wordle() {
             autoFocus
           />
           <button
+            type="button"
             className="submit-button"
             onClick={submitGuess}
             disabled={gameStatus !== "playing" || currentGuess.length !== 5}
@@ -247,7 +263,7 @@ export default function Wordle() {
       </div>
 
       <div className="controls">
-        <button className="new-game-button" onClick={initializeGame}>
+        <button type="button" className="new-game-button" onClick={initializeGame}>
           New Game
         </button>
       </div>

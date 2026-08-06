@@ -15,7 +15,6 @@ import Chess from "./games/chess/Chess";
 import Wordle from "./games/wordle/Wordle";
 import TicTacToe from "./games/tictactoe/TicTacToe";
 import MathSpeedChallenge from "./games/mathspeed/MathSpeedChallenge";
-import Ludo from "./games/ludo/Ludo";
 import AdBanner from "./components/layout/AdBanner";
 import { PremiumProvider } from "./context/PremiumContext";
 import { PlayerProvider, usePlayer } from "./context/PlayerContext";
@@ -50,7 +49,6 @@ function AppInner() {
               <Route path="/wordle" element={<Wordle />} />
               <Route path="/tictactoe" element={<TicTacToe />} />
               <Route path="/mathspeed" element={<MathSpeedChallenge />} />
-              <Route path="/ludo" element={<Ludo />} />
             </Routes>
           </main>
           <aside className="ad-sidebar ad-sidebar-right">

@@ -1,6 +1,6 @@
 import React from "react";
 import Seo from "../components/common/Seo";
-import { FileText, ShieldAlert, CheckCircle, Scale } from "lucide-react";
+import { Scale } from "lucide-react";
 import "./TermsPage.css";
 
 export default function TermsPage() {
@@ -24,8 +24,7 @@ export default function TermsPage() {
         <section className="terms-section">
           <h2>1. Agreement to Terms</h2>
           <p>
-            By accessing or using <strong>Playntric</strong> (
-            <a href="https://playntric.vercel.app">https://playntric.vercel.app</a>),
+            By accessing or using <strong>Playntric</strong> (<a href="https://playntric.vercel.app">https://playntric.vercel.app</a>),
             you agree to be bound by these Terms of Service. If you disagree with
             any part of these terms, you may not access the website or use any of our
             browser games.

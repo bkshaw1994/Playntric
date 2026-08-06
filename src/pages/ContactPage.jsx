@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Seo from "../components/common/Seo";
-import { Mail, MessageSquare, Send, CheckCircle2, HelpCircle, Info } from "lucide-react";
+import { Mail, MessageSquare, Send, CheckCircle2, Info } from "lucide-react";
 import "./ContactPage.css";
 
 export default function ContactPage() {
@@ -62,8 +62,9 @@ export default function ContactPage() {
           ) : (
             <form onSubmit={handleSubmit} className="contact-form">
               <div className="form-group">
-                <label>Your Name</label>
+                <label htmlFor="contact-name">Your Name</label>
                 <input
+                  id="contact-name"
                   type="text"
                   placeholder="John Doe"
                   value={form.name}
@@ -73,8 +74,9 @@ export default function ContactPage() {
               </div>
 
               <div className="form-group">
-                <label>Email Address</label>
+                <label htmlFor="contact-email">Email Address</label>
                 <input
+                  id="contact-email"
                   type="email"
                   placeholder="john@example.com"
                   value={form.email}
@@ -84,8 +86,9 @@ export default function ContactPage() {
               </div>
 
               <div className="form-group">
-                <label>Subject</label>
+                <label htmlFor="contact-subject">Subject</label>
                 <input
+                  id="contact-subject"
                   type="text"
                   placeholder="Feedback / Question"
                   value={form.subject}
@@ -94,8 +97,9 @@ export default function ContactPage() {
               </div>
 
               <div className="form-group">
-                <label>Message</label>
+                <label htmlFor="contact-message">Message</label>
                 <textarea
+                  id="contact-message"
                   rows="4"
                   placeholder="Type your message here..."
                   value={form.message}
