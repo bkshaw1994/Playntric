@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Gamepad2 } from "lucide-react";
 import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
@@ -12,11 +12,11 @@ import Chess from "./games/chess/Chess";
 import Wordle from "./games/wordle/Wordle";
 import TicTacToe from "./games/tictactoe/TicTacToe";
 import MathSpeedChallenge from "./games/mathspeed/MathSpeedChallenge";
+import Ludo from "./games/ludo/Ludo";
 import AdBanner from "./components/layout/AdBanner";
 import { PremiumProvider } from "./context/PremiumContext";
 import { PlayerProvider, usePlayer } from "./context/PlayerContext";
 import PlayerNameModal from "./components/modals/PlayerNameModal";
-import { Link } from "react-router-dom";
 import "./styles/App.css";
 
 function AppInner() {
@@ -44,6 +44,7 @@ function AppInner() {
               <Route path="/wordle" element={<Wordle />} />
               <Route path="/tictactoe" element={<TicTacToe />} />
               <Route path="/mathspeed" element={<MathSpeedChallenge />} />
+              <Route path="/ludo" element={<Ludo />} />
             </Routes>
           </main>
           <aside className="ad-sidebar ad-sidebar-right">

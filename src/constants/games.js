@@ -34,4 +34,11 @@ export const GAMES = [
     description: "Solve math problems quickly",
     color: "#2ecc71",
   },
+  {
+    name: "Ludo Classic",
+    icon: "🎲",
+    path: "/ludo",
+    description: "Classic dice & token strategy game",
+    color: "#ff6b6b",
+  },
 ];

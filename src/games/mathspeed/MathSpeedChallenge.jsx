@@ -89,13 +89,18 @@ export default function MathSpeedChallenge() {
         answer = num1 + num2;
         break;
       case "-":
+        if (diffLevel !== "hard" && num1 < num2) {
+          [num1, num2] = [num2, num1];
+        }
         answer = num1 - num2;
         break;
       case "*":
         answer = num1 * num2;
         break;
       case "/":
-        answer = Math.round((num1 / num2) * 100) / 100;
+        // Ensure clean integer division (num1 / num2 = answer)
+        answer = num1;
+        num1 = answer * num2;
         break;
       default:
         answer = 0;
