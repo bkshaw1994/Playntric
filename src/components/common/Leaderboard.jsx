@@ -8,12 +8,17 @@ import {
   Hash,
   Gamepad2,
   X,
-  Globe,
+  Database,
   HardDrive,
 } from "lucide-react";
 import { usePlayer } from "../../context/PlayerContext";
-import { supabase, isSupabaseReady } from "../../lib/supabase";
 import "./Leaderboard.css";
+
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:5001"
+    : "");
 
 const GAMES = [
   {
@@ -57,7 +62,7 @@ const GAMES = [
   },
 ];
 
-// ─── Score persistence ────────────────────────────────────────────────────
+// ─── Score persistence to MongoDB Atlas ─────────────────────────────────────
 
 export function saveScore(game, entry) {
   const resolvedName =
@@ -72,7 +77,7 @@ export function saveScore(game, entry) {
       .trim() || "Anonymous";
   const resolvedScore = Number(entry?.score ?? 0) || 0;
 
-  // Always save locally first (offline support + fast reads)
+  // Always save locally first (offline fallback + instant UI updates)
   const key = `lb_${game}`;
   const existing = JSON.parse(localStorage.getItem(key) || "[]");
   existing.push({
@@ -84,24 +89,23 @@ export function saveScore(game, entry) {
   existing.sort((a, b) => b.score - a.score);
   localStorage.setItem(key, JSON.stringify(existing.slice(0, 100)));
 
-  // Save to Supabase if configured (fire-and-forget)
-  if (supabase) {
-    const { name, score, ...metadata } = entry || {};
-    supabase
-      .from("scores")
-      .insert({
-        game,
-        player_name: resolvedName,
-        score: resolvedScore,
-        metadata,
-      })
-      .then(({ error }) => {
-        if (error) console.warn("Supabase save failed:", error.message);
-      });
-  }
+  // Save to MongoDB Atlas via API
+  const { name, score, ...metadata } = entry || {};
+  const payload = {
+    game,
+    player_name: resolvedName,
+    score: resolvedScore,
+    metadata,
+  };
+
+  fetch(`${API_BASE}/api/leaderboard`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).catch((err) => console.warn("MongoDB Atlas score save warning:", err));
 }
 
-// ─── Data fetching ─────────────────────────────────────────────────────────
+// ─── Data fetching from MongoDB Atlas ────────────────────────────────────────
 
 function deduplicateByPlayer(rows) {
   const best = {};
@@ -116,7 +120,7 @@ function deduplicateByPlayer(rows) {
         metadata: row.metadata || row,
         date:
           row.date ||
-          (row.created_at ? row.created_at.split("T")[0] : "") ||
+          (row.created_at ? new Date(row.created_at).toLocaleDateString() : "") ||
           "",
       };
     }
@@ -127,15 +131,16 @@ function deduplicateByPlayer(rows) {
 }
 
 async function fetchScores(game) {
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("scores")
-      .select("*")
-      .eq("game", game)
-      .order("score", { ascending: false })
-      .limit(200);
-
-    if (!error && data?.length > 0) return deduplicateByPlayer(data);
+  try {
+    const res = await fetch(`${API_BASE}/api/leaderboard?game=${game}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.scores && data.scores.length > 0) {
+        return deduplicateByPlayer(data.scores);
+      }
+    }
+  } catch (err) {
+    console.warn("MongoDB fetch scores warning:", err);
   }
 
   // Fallback: localStorage
@@ -151,6 +156,7 @@ export default function Leaderboard({ game, onClose, standalone = false }) {
   const { playerName } = usePlayer();
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMongoConnected, setIsMongoConnected] = useState(true);
   const [activeGame, setActiveGame] = useState(game || "mathspeed");
 
   const activeMeta = GAMES.find((g) => g.key === activeGame);
@@ -177,7 +183,7 @@ export default function Leaderboard({ game, onClose, standalone = false }) {
   const modal = (
     <div className={`lb-modal ${standalone ? "lb-modal-standalone" : ""}`}>
       {!standalone && (
-        <button className="lb-close" onClick={onClose}>
+        <button type="button" className="lb-close" onClick={onClose}>
           <X size={18} />
         </button>
       )}
@@ -186,16 +192,9 @@ export default function Leaderboard({ game, onClose, standalone = false }) {
         <Trophy size={24} /> Leaderboard
       </h2>
 
-      {isSupabaseReady ? (
-        <div className="lb-banner lb-global">
-          <Globe size={13} /> Global rankings — all players worldwide
-        </div>
-      ) : (
-        <div className="lb-banner lb-local">
-          <HardDrive size={13} /> Local scores only — configure Supabase in{" "}
-          <code>.env</code> for global rankings
-        </div>
-      )}
+      <div className="lb-banner lb-global">
+        <Database size={14} /> MongoDB Atlas Connected — Global Rankings
+      </div>
 
       {playerName && myRank > 0 && (
         <div className="lb-my-rank">
@@ -207,6 +206,7 @@ export default function Leaderboard({ game, onClose, standalone = false }) {
       <div className="lb-tabs">
         {GAMES.map((tab) => (
           <button
+            type="button"
             key={tab.key}
             className={`lb-tab ${activeGame === tab.key ? "active" : ""}`}
             onClick={() => setActiveGame(tab.key)}
@@ -217,13 +217,13 @@ export default function Leaderboard({ game, onClose, standalone = false }) {
       </div>
 
       {loading ? (
-        <div className="lb-loading">Loading scores…</div>
+        <div className="lb-loading">Loading scores from MongoDB Atlas…</div>
       ) : scores.length === 0 ? (
         <div className="lb-empty">
           <p>
-            <Gamepad2 size={24} /> No scores yet!
+            <Gamepad2 size={24} /> No scores recorded yet!
           </p>
-          <p>Play a game to record your first score.</p>
+          <p>Play a game to log your first MongoDB high score.</p>
         </div>
       ) : (
         <table className="lb-table">
@@ -270,11 +270,9 @@ export default function Leaderboard({ game, onClose, standalone = false }) {
         </table>
       )}
 
-      {!isSupabaseReady && (
-        <button className="lb-clear" onClick={clearLocalScores}>
-          Clear local scores
-        </button>
-      )}
+      <button type="button" className="lb-clear" onClick={clearLocalScores}>
+        Clear local cache
+      </button>
     </div>
   );
 

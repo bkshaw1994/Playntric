@@ -1,49 +1,39 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Gamepad2,
   ArrowRight,
-  Sparkles,
-  HelpCircle,
-  ScrollText,
+  Search,
 } from "lucide-react";
 import Seo from "../components/common/Seo";
 import { GAMES } from "../constants/games";
 import "../styles/Home.css";
 
-export default function Home() {
-  const games = GAMES;
+const CATEGORIES = ["All", "Strategy", "Puzzle", "Math", "Word"];
 
-  const sections = [
-    {
-      title: "Daily Challenges",
-      description:
-        "Take the rotating daily route, maintain streaks, and unlock rewards.",
-      path: "/daily-challenges",
-      icon: <Sparkles size={16} />,
-    },
-    {
-      title: "Game of the Day",
-      description:
-        "Jump into today\'s featured pick and share it with friends.",
-      path: "/game-of-the-day",
-      icon: <Gamepad2 size={16} />,
-    },
-    {
-      title: "FAQs",
-      description:
-        "Get quick answers about gameplay, scoring, and platform support.",
-      path: "/faqs",
-      icon: <HelpCircle size={16} />,
-    },
-    {
-      title: "Rules of the Game",
-      description:
-        "Learn each game\'s rules and improve your winning strategy.",
-      path: "/rules",
-      icon: <ScrollText size={16} />,
-    },
-  ];
+const GAME_METADATA = {
+  "/sudoku": { category: "Puzzle", rating: "4.9 ★", difficulty: "Easy - Hard" },
+  "/chess": { category: "Strategy", rating: "4.9 ★", difficulty: "AI & Local" },
+  "/wordle": { category: "Word", rating: "4.8 ★", difficulty: "4, 5, 6 Letters" },
+  "/tictactoe": { category: "Strategy", rating: "4.7 ★", difficulty: "AI & Local" },
+  "/mathspeed": { category: "Math", rating: "4.8 ★", difficulty: "60s Challenge" },
+};
+
+export default function Home() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const filteredGames = useMemo(() => {
+    return GAMES.filter((game) => {
+      const meta = GAME_METADATA[game.path] || { category: "General" };
+      const matchesSearch =
+        game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        game.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCat =
+        activeCategory === "All" || meta.category === activeCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [searchTerm, activeCategory]);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -58,7 +48,7 @@ export default function Home() {
       {
         "@type": "ItemList",
         name: "Playntric Games",
-        itemListElement: games.map((game, index) => ({
+        itemListElement: GAMES.map((game, index) => ({
           "@type": "ListItem",
           position: index + 1,
           item: {
@@ -69,49 +59,19 @@ export default function Home() {
           },
         })),
       },
-      {
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "Are Playntric games free to play?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes. All games on Playntric are free to play in your browser without downloads.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Can I play Playntric games on mobile?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes. Playntric games are responsive and work on modern mobile browsers.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Which games are available on Playntric?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Playntric currently includes Sudoku, Chess, Wordle, Tic Tac Toe, and Math Speed Challenge.",
-            },
-          },
-        ],
-      },
     ],
   };
 
   return (
     <div className="home-container">
       <Seo
-        title="Playntric | Free Online Sudoku, Chess, Wordle, Tic Tac Toe and Math Games"
-        description="Play free online games on Playntric, including Sudoku, Chess, Wordle, Tic Tac Toe, and Math Speed Challenge."
+        title="Playntric | Pro Online Browser Gaming Portal"
+        description="Play free online browser games on Playntric, including Sudoku, Chess, Wordle, Tic Tac Toe, and Math Speed Challenge."
         path="/"
         keywords={[
           "free online games",
           "browser games",
           "Playntric",
-          "unblocked games",
           "sudoku online",
           "play chess online",
           "wordle game",
@@ -120,80 +80,121 @@ export default function Home() {
         ]}
         structuredData={structuredData}
       />
-      {/* <div className="home-header">
-        <h1>
-          <Gamepad2 size={32} /> Playntric
-        </h1>
-        <p className="home-subtitle">Play your favorite games online</p>
-      </div> */}
 
-      {/* <section className="growth-strip" aria-label="Feature navigation">
-        <div className="growth-highlight">
-          <Sparkles size={18} />
-          <span>
-            Explore dedicated sections for challenges, daily picks,
-            leaderboard, and help pages.
-          </span>
+      {/* Top Search & Category Filter Bar */}
+      <section className="portal-toolbar">
+        <div className="search-input-wrap">
+          <Search size={18} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search games (e.g. Chess, Sudoku...)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="game-search-input"
+          />
         </div>
 
-        <div className="growth-actions">
-          {sections.map((section) => (
-            <Link
-              key={section.path}
-              className="growth-main-btn"
-              to={section.path}
+        <div className="category-filter-chips">
+          {CATEGORIES.map((cat) => (
+            <button
+              type="button"
+              key={cat}
+              className={`filter-chip ${activeCategory === cat ? "active" : ""}`}
+              onClick={() => setActiveCategory(cat)}
             >
-              {section.icon} {section.title}
-            </Link>
+              {cat}
+            </button>
           ))}
         </div>
-      </section> */}
+      </section>
 
-      <div className="games-grid">
-        {games.map((game) => (
-          <Link to={game.path} key={game.name} className="game-card-link">
-            <div className="game-card" style={{ borderTopColor: game.color }}>
-              <div className="game-icon">{game.icon}</div>
-              <h3 className="game-name">{game.name}</h3>
-              <p className="game-description">{game.description}</p>
-              <span className="play-button">
-                Play Now <ArrowRight size={14} />
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* <section className="seo-content" aria-label="About Playntric games">
-        <h2>Why Players Keep Returning to Playntric</h2>
-        <p>
-          Playntric is built for quick, replayable browser gaming. Whether you
-          want a fast Sudoku puzzle, a strategic Chess session, a Wordle round,
-          or a short Tic Tac Toe match, you can jump in instantly without
-          downloads.
-        </p>
-        <p>
-          Every game page is optimized for speed, mobile play, and clean UI. We
-          continuously improve challenge quality, player stats, and leaderboard
-          features to keep sessions engaging.
-        </p>
-
-        <div className="seo-links">
-          {sections.map((section) => (
-            <Link
-              key={section.path}
-              to={section.path}
-              className="seo-link-chip"
-            >
-              {section.title}
-            </Link>
-          ))}
+      {/* Games Grid */}
+      <section className="games-section">
+        <div className="section-header-row">
+          <h2>
+            <Gamepad2 size={24} /> Featured Games ({filteredGames.length})
+          </h2>
         </div>
-      </section> */}
 
-      {/* <div className="home-footer">
-        <p>Choose a game to start playing and share Playntric with a friend!</p>
-      </div> */}
+        {filteredGames.length === 0 ? (
+          <div className="no-games-found">
+            <p>No games matched your search "{searchTerm}".</p>
+            <button
+              type="button"
+              className="clear-search-btn"
+              onClick={() => {
+                setSearchTerm("");
+                setActiveCategory("All");
+              }}
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <div className="games-grid">
+            {filteredGames.map((game) => {
+              const meta = GAME_METADATA[game.path] || {
+                category: "Puzzle",
+                rating: "4.8 ★",
+                difficulty: "Normal",
+              };
+
+              return (
+                <Link to={game.path} key={game.name} className="game-card-link">
+                  <div
+                    className="game-card"
+                    style={{ "--accent-color": game.color }}
+                  >
+                    <div className="card-top-bar">
+                      <span className="card-cat-badge">{meta.category}</span>
+                      <span className="card-rating">{meta.rating}</span>
+                    </div>
+
+                    <div className="game-icon-wrap" style={{ color: game.color }}>
+                      <span className="game-emoji">{game.icon}</span>
+                    </div>
+
+                    <h3 className="game-name">{game.name}</h3>
+                    <p className="game-description">{game.description}</p>
+
+                    <div className="card-footer-bar">
+                      <span className="game-diff-tag">{meta.difficulty}</span>
+                      <span className="play-button">
+                        Play <ArrowRight size={14} />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Why Playntric Feature Section */}
+      <section className="why-section">
+        <h2>Why Gamers Choose Playntric</h2>
+        <div className="why-grid">
+          <div className="why-card">
+            <h3>⚡ Lightning Fast Engine</h3>
+            <p>
+              Built with Vite & React for sub-second loading speeds and zero latency.
+            </p>
+          </div>
+          <div className="why-card">
+            <h3>📱 Cross-Platform Ready</h3>
+            <p>
+              Play smoothly on your desktop, laptop, tablet, or smartphone.
+            </p>
+          </div>
+          <div className="why-card">
+            <h3>🏆 Global High Scores</h3>
+            <p>
+              Compete on real-time leaderboards and track your game statistics.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
