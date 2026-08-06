@@ -302,4 +302,4 @@ export default function TicTacToe() {
       )}
     </div>
   );
-};
+}

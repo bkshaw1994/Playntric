@@ -10,6 +10,8 @@ import GameOfDayPage from "./pages/GameOfDayPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsPage from "./pages/TermsPage";
 import ContactPage from "./pages/ContactPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import NotFound from "./pages/NotFound";
 import Sudoku from "./games/sudoku/Sudoku";
 import Chess from "./games/chess/Chess";
 import Wordle from "./games/wordle/Wordle";
@@ -49,6 +51,8 @@ function AppInner() {
               <Route path="/wordle" element={<Wordle />} />
               <Route path="/tictactoe" element={<TicTacToe />} />
               <Route path="/mathspeed" element={<MathSpeedChallenge />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <aside className="ad-sidebar ad-sidebar-right">
@@ -64,7 +68,8 @@ function AppInner() {
             <Link to="/terms">Terms of Service</Link>
             <Link to="/contact">Contact & About</Link>
             <Link to="/faqs">FAQs</Link>
-            <Link to="/rules">Rules</Link>
+            <Link to="/rules">Rules of the Game</Link>
+            <Link to="/leaderboard">Leaderboard</Link>
           </div>
         </footer>
         {!playerName && <PlayerNameModal />}
