@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useMemo, useCallback } from "react";
 
-const PremiumContext = createContext();
+const PremiumContext = createContext(null);
 
 export function PremiumProvider({ children }) {
   // Premium is enabled for all users (modal disabled)
@@ -10,17 +10,20 @@ export function PremiumProvider({ children }) {
     return localStorage.getItem("chessTheme") || "classic";
   });
 
-  const unlockPremium = () => {};
+  const unlockPremium = useCallback(() => {}, []);
 
-  const updateChessTheme = (theme) => {
+  const updateChessTheme = useCallback((theme) => {
     setChessTheme(theme);
     localStorage.setItem("chessTheme", theme);
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({ isPremium, unlockPremium, chessTheme, updateChessTheme }),
+    [isPremium, unlockPremium, chessTheme, updateChessTheme]
+  );
 
   return (
-    <PremiumContext.Provider
-      value={{ isPremium, unlockPremium, chessTheme, updateChessTheme }}
-    >
+    <PremiumContext.Provider value={contextValue}>
       {children}
     </PremiumContext.Provider>
   );

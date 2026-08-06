@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useMemo, useCallback } from "react";
 
 const PlayerContext = createContext(null);
 
@@ -7,14 +7,19 @@ export function PlayerProvider({ children }) {
     () => localStorage.getItem("playerName") || "",
   );
 
-  const setPlayerName = (name) => {
-    const n = name.trim();
+  const setPlayerName = useCallback((name) => {
+    const n = (name || "").trim();
     localStorage.setItem("playerName", n);
     setPlayerNameState(n);
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({ playerName, setPlayerName }),
+    [playerName, setPlayerName]
+  );
 
   return (
-    <PlayerContext.Provider value={{ playerName, setPlayerName }}>
+    <PlayerContext.Provider value={contextValue}>
       {children}
     </PlayerContext.Provider>
   );
