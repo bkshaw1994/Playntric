@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Gamepad2 } from "lucide-react";
 import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
@@ -7,6 +7,9 @@ import FAQPage from "./pages/FAQPage";
 import RulesPage from "./pages/RulesPage";
 import DailyChallengesPage from "./pages/DailyChallengesPage";
 import GameOfDayPage from "./pages/GameOfDayPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsPage from "./pages/TermsPage";
+import ContactPage from "./pages/ContactPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import NotFound from "./pages/NotFound";
 import Sudoku from "./games/sudoku/Sudoku";
@@ -18,7 +21,6 @@ import AdBanner from "./components/layout/AdBanner";
 import { PremiumProvider } from "./context/PremiumContext";
 import { PlayerProvider, usePlayer } from "./context/PlayerContext";
 import PlayerNameModal from "./components/modals/PlayerNameModal";
-import { Link } from "react-router-dom";
 import "./styles/App.css";
 
 function AppInner() {
@@ -41,6 +43,9 @@ function AppInner() {
               <Route path="/game-of-the-day" element={<GameOfDayPage />} />
               <Route path="/faqs" element={<FAQPage />} />
               <Route path="/rules" element={<RulesPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/contact" element={<ContactPage />} />
               <Route path="/sudoku" element={<Sudoku />} />
               <Route path="/chess" element={<Chess />} />
               <Route path="/wordle" element={<Wordle />} />
@@ -56,9 +61,12 @@ function AppInner() {
         </div>
         <footer className="app-footer">
           <p>
-            &copy; 2024 Playntric. Have fun playing! <Gamepad2 size={14} />
+            &copy; 2026 Playntric. All rights reserved. <Gamepad2 size={14} />
           </p>
           <div className="footer-links">
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/terms">Terms of Service</Link>
+            <Link to="/contact">Contact & About</Link>
             <Link to="/faqs">FAQs</Link>
             <Link to="/rules">Rules of the Game</Link>
             <Link to="/leaderboard">Leaderboard</Link>

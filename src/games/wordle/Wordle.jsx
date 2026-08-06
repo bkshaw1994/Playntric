@@ -78,14 +78,17 @@ export default function Wordle() {
 
   const handleKeyDown = (e) => {
     if (gameStatus !== "playing") return;
+
     if (e.key === "Enter") {
-      e.preventDefault();
       submitGuess();
+    } else if (e.key === "Backspace") {
+      setCurrentGuess((prev) => prev.slice(0, -1));
+    } else if (/^[a-zA-Z]$/.test(e.key) && currentGuess.length < wordLength) {
+      setCurrentGuess((prev) => (prev + e.key).toUpperCase());
     }
   };
 
   const submitGuess = () => {
-    if (loading || gameStatus !== "playing") return;
     if (currentGuess.length !== wordLength) {
       setMessage(`Word must be ${wordLength} letters!`);
       return;
@@ -97,20 +100,17 @@ export default function Wordle() {
 
     const newGuesses = [...guesses, currentGuess];
     setGuesses(newGuesses);
-    setCurrentGuess("");
 
     if (currentGuess === targetWord) {
       setGameStatus("won");
       setMessage(
-        `🎉 You won in ${newGuesses.length} guess${newGuesses.length > 1 ? "es" : ""}!`,
+        `🎉 You won in ${newGuesses.length} guess${
+          newGuesses.length > 1 ? "es" : ""
+        }!`,
       );
-      const lengthBonus = (wordLength - 4) * 50;
       saveScore("wordle", {
         name: playerName || "Anonymous",
-        score: Math.max(
-          0,
-          (MAX_ATTEMPTS + 1 - newGuesses.length) * 100 + lengthBonus,
-        ),
+        score: Math.max(0, (MAX_ATTEMPTS + 1 - newGuesses.length) * 100),
         attempts: newGuesses.length,
         difficulty,
       });
@@ -119,60 +119,25 @@ export default function Wordle() {
       setMessage(`😢 Game Over! The word was: ${targetWord}`);
     } else {
       setMessage(`${MAX_ATTEMPTS - newGuesses.length} attempts remaining`);
+      setCurrentGuess("");
     }
   };
 
   const handleLetterClick = (letter) => {
     if (gameStatus === "playing" && currentGuess.length < wordLength) {
-      setCurrentGuess(currentGuess + letter);
+      setCurrentGuess((prev) => prev + letter);
     }
   };
 
   const handleBackspace = () => {
-    setCurrentGuess(currentGuess.slice(0, -1));
+    setCurrentGuess((prev) => prev.slice(0, -1));
   };
-
-  if (!difficulty) {
-    return (
-      <div className="wordle-container">
-        <Seo
-          title="Play Wordle Online Free | Playntric"
-          description="Guess the hidden word with easy, medium, and hard levels in Playntric's free online Wordle game."
-          path="/wordle"
-          keywords={[
-            "wordle online",
-            "word guessing game",
-            "free word game",
-            "browser puzzle game",
-            "Playntric wordle",
-          ]}
-          structuredData={structuredData}
-        />
-        <h2>Wordle Game</h2>
-        <p className="game-description">Choose a difficulty level</p>
-
-        <div className="difficulty-selection">
-          {Object.entries(LEVELS).map(([key, level]) => (
-            <button
-              key={key}
-              className={`difficulty-button ${key}`}
-              onClick={() => startLevel(key)}
-            >
-              <div className="difficulty-icon">{level.icon}</div>
-              <div className="difficulty-name">{level.label}</div>
-              <div className="difficulty-desc">{level.desc}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="wordle-container">
       <Seo
         title="Play Wordle Online Free | Playntric"
-        description="Guess the hidden word with easy, medium, and hard levels in Playntric's free online Wordle game."
+        description="Guess the hidden word with easy, medium, and hard levels on Playntric."
         path="/wordle"
         keywords={[
           "wordle online",
@@ -183,15 +148,29 @@ export default function Wordle() {
         ]}
         structuredData={structuredData}
       />
-      <h2>Wordle - {LEVELS[difficulty].label}</h2>
-      <p className="game-description">
-        Guess the {wordLength}-letter word in {MAX_ATTEMPTS} attempts. Green
-        means correct position, Yellow means wrong position.
-      </p>
+      <h2>Wordle Game</h2>
 
-      {loading ? (
-        <div className="game-message">
-          <p>Loading a new word…</p>
+      {!difficulty ? (
+        <div className="difficulty-selection">
+          <p className="game-description">Select a difficulty level to start:</p>
+          <div className="difficulty-cards">
+            {Object.entries(LEVELS).map(([key, level]) => (
+              <button
+                type="button"
+                key={key}
+                className="difficulty-card"
+                onClick={() => startLevel(key)}
+              >
+                <span className="diff-icon">{level.icon}</span>
+                <span className="diff-label">{level.label}</span>
+                <span className="diff-desc">{level.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : loading ? (
+        <div className="wordle-loading">
+          <p>Loading random word...</p>
         </div>
       ) : (
         <div className="wordle-content">
@@ -208,7 +187,10 @@ export default function Wordle() {
                       : "";
 
                     return (
-                      <div key={colIdx} className={`letter-box ${color}`}>
+                      <div
+                        key={colIdx}
+                        className={`letter-box ${color} len-${wordLength}`}
+                      >
                         {letter}
                       </div>
                     );
@@ -226,6 +208,7 @@ export default function Wordle() {
                 {["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"].map(
                   (letter) => (
                     <button
+                      type="button"
                       key={letter}
                       className={`key ${usedLetters.has(letter) ? "used" : ""}`}
                       onClick={() => handleLetterClick(letter)}
@@ -239,6 +222,7 @@ export default function Wordle() {
               <div className="keyboard">
                 {["A", "S", "D", "F", "G", "H", "J", "K", "L"].map((letter) => (
                   <button
+                    type="button"
                     key={letter}
                     className={`key ${usedLetters.has(letter) ? "used" : ""}`}
                     onClick={() => handleLetterClick(letter)}
@@ -251,6 +235,7 @@ export default function Wordle() {
               <div className="keyboard">
                 {["Z", "X", "C", "V", "B", "N", "M"].map((letter) => (
                   <button
+                    type="button"
                     key={letter}
                     className={`key ${usedLetters.has(letter) ? "used" : ""}`}
                     onClick={() => handleLetterClick(letter)}
@@ -260,6 +245,7 @@ export default function Wordle() {
                   </button>
                 ))}
                 <button
+                  type="button"
                   className="key backspace"
                   onClick={handleBackspace}
                   disabled={gameStatus !== "playing"}
@@ -268,49 +254,59 @@ export default function Wordle() {
                 </button>
               </div>
             </div>
+
+            <div className="keyboard-input">
+              <p className="input-label">Or type directly:</p>
+              <input
+                type="text"
+                maxLength={wordLength}
+                value={currentGuess}
+                onChange={(e) =>
+                  setCurrentGuess(
+                    e.target.value
+                      .replace(/[^a-zA-Z]/g, "")
+                      .toUpperCase()
+                      .slice(0, wordLength),
+                  )
+                }
+                onKeyDown={handleKeyDown}
+                placeholder="Type a word..."
+                disabled={gameStatus !== "playing"}
+                className="word-input"
+                autoFocus
+              />
+              <button
+                type="button"
+                className="submit-button"
+                onClick={submitGuess}
+                disabled={
+                  gameStatus !== "playing" || currentGuess.length !== wordLength
+                }
+              >
+                Submit Guess
+              </button>
+            </div>
           </div>
 
-          <div className="keyboard-input">
-            <p className="input-label">Or type directly:</p>
-            <input
-              type="text"
-              maxLength={wordLength}
-              value={currentGuess}
-              onChange={(e) =>
-                setCurrentGuess(
-                  e.target.value
-                    .replace(/[^a-zA-Z]/g, "")
-                    .toUpperCase()
-                    .slice(0, wordLength),
-                )
-              }
-              onKeyDown={handleKeyDown}
-              placeholder="Type a word..."
-              disabled={gameStatus !== "playing"}
-              className="word-input"
-              autoFocus
-            />
+          <div className="controls">
             <button
-              className="submit-button"
-              onClick={submitGuess}
-              disabled={
-                gameStatus !== "playing" || currentGuess.length !== wordLength
-              }
+              type="button"
+              className="new-game-button"
+              onClick={newGame}
+              disabled={loading}
             >
-              Submit Guess
+              New Game
+            </button>
+            <button
+              type="button"
+              className="new-game-button"
+              onClick={backToLevels}
+            >
+              Change Level
             </button>
           </div>
         </div>
       )}
-
-      <div className="controls">
-        <button className="new-game-button" onClick={newGame} disabled={loading}>
-          New Game
-        </button>
-        <button className="new-game-button" onClick={backToLevels}>
-          Change Level
-        </button>
-      </div>
     </div>
   );
 }

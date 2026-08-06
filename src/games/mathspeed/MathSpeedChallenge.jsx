@@ -89,6 +89,9 @@ export default function MathSpeedChallenge() {
         answer = num1 + num2;
         break;
       case "-":
+        if (diffLevel !== "hard" && num1 < num2) {
+          [num1, num2] = [num2, num1];
+        }
         answer = num1 - num2;
         break;
       case "*":
