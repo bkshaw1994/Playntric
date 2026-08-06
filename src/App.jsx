@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Gamepad2 } from "lucide-react";
 import Navbar from "./components/common/Navbar";
 import Home from "./pages/Home";
@@ -7,6 +7,7 @@ import FAQPage from "./pages/FAQPage";
 import RulesPage from "./pages/RulesPage";
 import DailyChallengesPage from "./pages/DailyChallengesPage";
 import GameOfDayPage from "./pages/GameOfDayPage";
+import LoginPage from "./pages/LoginPage";
 import Sudoku from "./games/sudoku/Sudoku";
 import Chess from "./games/chess/Chess";
 import Wordle from "./games/wordle/Wordle";
@@ -15,12 +16,14 @@ import MathSpeedChallenge from "./games/mathspeed/MathSpeedChallenge";
 import AdBanner from "./components/layout/AdBanner";
 import { PremiumProvider } from "./context/PremiumContext";
 import { PlayerProvider, usePlayer } from "./context/PlayerContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import PlayerNameModal from "./components/modals/PlayerNameModal";
-import { Link } from "react-router-dom";
 import "./styles/App.css";
 
 function AppInner() {
   const { playerName } = usePlayer();
+  const { isAuthenticated } = useAuth();
+
   return (
     <Router>
       <div className="app">
@@ -39,6 +42,8 @@ function AppInner() {
               <Route path="/game-of-the-day" element={<GameOfDayPage />} />
               <Route path="/faqs" element={<FAQPage />} />
               <Route path="/rules" element={<RulesPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<LoginPage />} />
               <Route path="/sudoku" element={<Sudoku />} />
               <Route path="/chess" element={<Chess />} />
               <Route path="/wordle" element={<Wordle />} />
@@ -59,7 +64,7 @@ function AppInner() {
             <Link to="/rules">Rules of the Game</Link>
           </div>
         </footer>
-        {!playerName && <PlayerNameModal />}
+        {!playerName && !isAuthenticated && <PlayerNameModal />}
       </div>
     </Router>
   );
@@ -68,9 +73,11 @@ function AppInner() {
 function App() {
   return (
     <PlayerProvider>
-      <PremiumProvider>
-        <AppInner />
-      </PremiumProvider>
+      <AuthProvider>
+        <PremiumProvider>
+          <AppInner />
+        </PremiumProvider>
+      </AuthProvider>
     </PlayerProvider>
   );
 }
